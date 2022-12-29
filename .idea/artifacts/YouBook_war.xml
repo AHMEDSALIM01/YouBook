@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="YouBook:war">
+    <output-path>$PROJECT_DIR$/Backend/YouBook/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>YouBook</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="YouBook-0.0.1-SNAPSHOT.war">
+      <element id="artifact" artifact-name="YouBook:war exploded" />
+    </root>
+  </artifact>
+</component>
