@@ -9,6 +9,7 @@ import lombok.ToString;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 @Entity
@@ -23,14 +24,17 @@ public class Reservation implements Serializable {
     @NotNull
     private String ref;
     @NotNull
-    private Date startDate;
+    private LocalDate startDate;
     @NotNull
-    private Date endDate;
+    private LocalDate endDate;
     @NotNull
     private Double totalPrice;
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "String default En_cours")
     private StatusReservation status;
+    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private Room room;
     @Transient
     private static long counter = 0;
     @PrePersist

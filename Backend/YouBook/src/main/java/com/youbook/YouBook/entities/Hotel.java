@@ -21,6 +21,7 @@ public class Hotel implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotNull
+    @Column(unique = true)
     private String name;
     @Column(unique = true)
     @NotNull
