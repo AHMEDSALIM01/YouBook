@@ -8,6 +8,8 @@ import lombok.ToString;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -29,4 +31,6 @@ public class Room implements Serializable {
     @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
+    @OneToMany(mappedBy = "room",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<Reservation> reservations;
 }
