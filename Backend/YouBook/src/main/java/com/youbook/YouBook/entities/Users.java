@@ -1,5 +1,7 @@
 package com.youbook.YouBook.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,7 +33,7 @@ public class Users implements Serializable {
     public String email;
     @NotNull
     public String password;
-    public Boolean is_active=false;
+    public Boolean is_active;
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;

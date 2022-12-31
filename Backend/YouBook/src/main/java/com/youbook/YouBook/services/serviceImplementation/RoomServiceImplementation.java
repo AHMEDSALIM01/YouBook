@@ -1,9 +1,12 @@
 package com.youbook.YouBook.services.serviceImplementation;
 
 import com.youbook.YouBook.entities.Hotel;
+import com.youbook.YouBook.entities.Reservation;
 import com.youbook.YouBook.entities.Room;
+import com.youbook.YouBook.entities.Users;
+import com.youbook.YouBook.enums.StatusReservation;
 import com.youbook.YouBook.repositories.RoomRepository;
-import com.youbook.YouBook.services.HotelService;
+import com.youbook.YouBook.services.ReservationService;
 import com.youbook.YouBook.services.RoomService;
 import com.youbook.YouBook.validation.RoomValidator;
 import org.springframework.stereotype.Component;
@@ -29,7 +32,6 @@ public class RoomServiceImplementation implements RoomService {
                 throw new IllegalStateException("chambre existe déja");
             }else {
                 room.setHotel(hotel);
-                room.setAvailability(true);
                 return roomRepository.save(room);
             }
         }else{
@@ -58,13 +60,19 @@ public class RoomServiceImplementation implements RoomService {
     }
 
     @Override
-    public Room resrveRoom(Hotel hotel, Room room, LocalDate startDate, LocalDate endDate) {
-        return null;
-    }
-
-    @Override
-    public Room cancelResrvation(Room room, LocalDate startDate, LocalDate endDate) {
-        return null;
+    public Boolean isRoomAvailable(Reservation reservation) {
+        LocalDate startDate = reservation.getStartDate();
+        LocalDate endDate = reservation.getEndDate();
+        Room room = this.getRoomById(reservation.getRoom().getId());
+        if(room!=null){
+            for (Reservation r : room.getReservations()) {
+                if (r!=null && r.getStatus() == StatusReservation.En_cours &&
+                        (r.getStartDate().isBefore(endDate) && r.getEndDate().isAfter(startDate))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     @Override
