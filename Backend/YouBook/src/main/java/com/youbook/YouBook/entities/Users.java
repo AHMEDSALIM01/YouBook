@@ -35,4 +35,6 @@ public class Users implements Serializable {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Reservation> reservations;
 }

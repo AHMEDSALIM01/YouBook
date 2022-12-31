@@ -32,9 +32,12 @@ public class Reservation implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "String default En_cours")
     private StatusReservation status;
-    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JoinColumn(name = "room_id")
     private Room room;
+    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private Users user;
     @Transient
     private static long counter = 0;
     @PrePersist
