@@ -6,46 +6,57 @@ import com.youbook.YouBook.entities.Room;
 import com.youbook.YouBook.enums.StatusHotel;
 import com.youbook.YouBook.repositories.HotelRepository;
 import com.youbook.YouBook.services.HotelService;
-import com.youbook.YouBook.validation.HotelValidatore;
+import com.youbook.YouBook.services.RoomService;
+import com.youbook.YouBook.validation.HotelValidator;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.parameters.P;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+@Component
 public class HotelServiceImplementation implements HotelService {
     private  HotelRepository hotelRepository;
-    private  HotelValidatore hotelValidatore;
-    public HotelServiceImplementation(HotelRepository hotelRepository){
+    private RoomService roomService;
+    private HotelValidator hotelValidator;
+    public HotelServiceImplementation(HotelRepository hotelRepository,RoomService roomService, HotelValidator hotelValidator){
         this.hotelRepository = hotelRepository;
-    }
-    public HotelServiceImplementation(HotelValidatore hotelValidatore){
-        this.hotelValidatore = hotelValidatore;
+        this.roomService = roomService;
+        this.hotelValidator = hotelValidator;
     }
 
     @Override
     public Hotel addHotel(Hotel hotel) {
-        Boolean isValideData = hotelValidatore.validate(hotel);
+        Boolean isValideData = hotelValidator.validate(hotel);
         if(isValideData){
             if(isExiste(hotel)){
                 throw new IllegalStateException("hotel existe déja");
             }
             else {
+                hotel.setStatus(StatusHotel.En_cours);
                 return hotelRepository.save(hotel);
             }
         }else {
-            throw new IllegalStateException(hotelValidatore.getErrorMessage());
+            throw new IllegalStateException(hotelValidator.getErrorMessage());
         }
     }
 
     @Override
-    public Hotel updateHotel(Hotel hotel) {
-        return null;
+    public Hotel updateHotel(Long id,Hotel hotel) {
+        Boolean hotelExist = hotelRepository.existsById(id);
+        Boolean hotelValide = hotelValidator.validate(hotel);
+        if(hotelExist){
+            if(hotelValide){
+                return hotelRepository.save(hotel);
+            }else{
+                throw new IllegalStateException(hotelValidator.getErrorMessage());
+            }
+        }else{
+            throw new IllegalStateException("hotel non trouvé");
+        }
     }
 
     @Override
@@ -65,9 +76,16 @@ public class HotelServiceImplementation implements HotelService {
     }
 
     @Override
-    public Boolean isAvailaible(LocalDate startDate, LocalDate endDate) {
-
-        return null;
+    public Boolean isAvailable(Hotel hotel,Room room,LocalDate startDate, LocalDate endDate) {
+        Boolean hotelExist = isExiste(hotel);
+        if (hotelExist){
+            if (!hotel.getRooms().contains(room) || startDate.isBefore(hotel.getStartNonAvailable()) || endDate.isAfter(hotel.getEndNonAvailable())) {
+                return false;
+            }
+            return true;
+        }else{
+            throw new IllegalStateException("hotel non trouvé");
+        }
     }
 
     @Override
@@ -131,7 +149,29 @@ public class HotelServiceImplementation implements HotelService {
     }
     @Override
     public Boolean isExiste(Hotel hotel) {
-        Boolean existe = hotelRepository.findByName(hotel.getName());
-        return existe;
+        Hotel existe = hotelRepository.findByName(hotel.getName());
+        Boolean existById = hotelRepository.existsById(hotel.getId());
+        if(existe!=null || existById){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Hotel nonAvailable(Long id, LocalDate startNonAvailable, LocalDate endNonAvailable) {
+        return null;
+    }
+
+    @Override
+    public Room addRoom(Long id, Room room) {
+        Hotel existHotel = hotelRepository.findById(id).orElse(null);
+        if(existHotel!=null){
+            Room savedRoom = roomService.addRoom(existHotel,room);
+            existHotel.getRooms().add(savedRoom);
+            hotelRepository.save(existHotel);
+            return savedRoom;
+        }else{
+            throw new IllegalStateException("Hotel non touvé");
+        }
     }
 }
