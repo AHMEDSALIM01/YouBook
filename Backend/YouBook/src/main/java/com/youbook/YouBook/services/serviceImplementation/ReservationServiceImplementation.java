@@ -1,6 +1,7 @@
 package com.youbook.YouBook.services.serviceImplementation;
 
 import com.youbook.YouBook.entities.Reservation;
+import com.youbook.YouBook.entities.Room;
 import com.youbook.YouBook.entities.Users;
 import com.youbook.YouBook.enums.StatusReservation;
 import com.youbook.YouBook.repositories.ReservationRepository;
@@ -29,20 +30,37 @@ public class ReservationServiceImplementation implements ReservationService {
     }
 
     @Override
-    public Reservation addReservation(Long user_id, Reservation reservation) {
-        Boolean isValidReservation = reservationValidator.validate(reservation);
-        Users users = userService.getUserById(user_id);
-        if(isValidReservation){
-            if(users !=null){
-                reservation.setUser(users);
-                reservation.setStatus(StatusReservation.En_cours);
-                return reservationRepository.save(reservation);
-            }else{
-                throw new IllegalStateException("utilisateur est invalide");
-            }
-        }else {
+    public Reservation addReservation(Reservation reservation) {
+
+        if (!reservationValidator.validate(reservation)) {
             throw new IllegalStateException(reservationValidator.getErrorMessage());
         }
+
+        Users user = userService.getUserById(reservation.getUser().getId());
+        if (user == null) {
+            throw new IllegalStateException("utilisateur est invalide");
+        }
+
+        Reservation reservationToCheck = reservationRepository.getReservationByRef(reservation.getRef());
+        if (reservationToCheck != null) {
+            throw new IllegalStateException("Réservation existe déjà");
+        }
+        Boolean isHotelAvailable = hotelService.isHotelAvailable(reservation);
+        if(!isHotelAvailable){
+            throw new IllegalStateException("L'hotel n'est pas disponible pour la période donnée");
+        }
+
+        Boolean isRoomAvailable = roomService.isRoomAvailable(reservation);
+        if (!isRoomAvailable) {
+            throw new IllegalStateException("La chambre n'est pas disponible pour la période donnée");
+        }
+
+        reservation.setStatus(StatusReservation.En_cours);
+        Reservation savedReservation = reservationRepository.save(reservation);
+        Room room = roomService.getRoomById(savedReservation.getRoom().getId());
+        room.getReservations().add(savedReservation);
+        roomService.updateRoom(room);
+        return savedReservation;
     }
 
     @Override

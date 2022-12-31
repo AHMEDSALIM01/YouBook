@@ -7,6 +7,7 @@ import com.youbook.YouBook.validation.UserValidator;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class UserServiceImplementation implements UserService {
@@ -26,6 +27,7 @@ public class UserServiceImplementation implements UserService {
             if(userByEmail !=null){
                 throw new IllegalStateException("utilisateur existe déja");
             }else{
+                user.setIs_active(true);
                 return userRepository.save(user);
             }
         }else {
@@ -46,7 +48,12 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public Users getUserById(Long id) {
-        return null;
+        Optional<Users> user = userRepository.findById(id);
+        if(user.isPresent()){
+            return user.get();
+        }else{
+            throw new IllegalStateException("utilisateur non trouvée");
+        }
     }
 
     @Override

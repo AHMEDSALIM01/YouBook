@@ -2,6 +2,7 @@ package com.youbook.YouBook.services;
 
 import com.youbook.YouBook.criteria.FilterCriteria;
 import com.youbook.YouBook.entities.Hotel;
+import com.youbook.YouBook.entities.Reservation;
 import com.youbook.YouBook.entities.Room;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,6 @@ public interface HotelService {
     Hotel updateHotel(Long id,Hotel hotel);
     List<Hotel> getAllHotels();
     Hotel delete(Hotel hotel);
-    Boolean isAvailable(Hotel hotel, Room room, LocalDate startDate, LocalDate endDate);
     List<Hotel> filterByCriteria(FilterCriteria criteria);
     Hotel accepteHotel(Hotel hotel);
     Hotel refuseHotel(Hotel hotel);
@@ -23,4 +23,5 @@ public interface HotelService {
     Boolean isExiste(Hotel hotel);
     Hotel nonAvailable(Long id,LocalDate startNonAvailable,LocalDate endNonAvailable);
     Room addRoom(Long id,Room room);
+    Boolean isHotelAvailable(Reservation reservation);
 }

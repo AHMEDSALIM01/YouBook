@@ -2,6 +2,7 @@ package com.youbook.YouBook.services.serviceImplementation;
 
 import com.youbook.YouBook.criteria.FilterCriteria;
 import com.youbook.YouBook.entities.Hotel;
+import com.youbook.YouBook.entities.Reservation;
 import com.youbook.YouBook.entities.Room;
 import com.youbook.YouBook.enums.StatusHotel;
 import com.youbook.YouBook.repositories.HotelRepository;
@@ -76,16 +77,24 @@ public class HotelServiceImplementation implements HotelService {
     }
 
     @Override
-    public Boolean isAvailable(Hotel hotel,Room room,LocalDate startDate, LocalDate endDate) {
-        Boolean hotelExist = isExiste(hotel);
-        if (hotelExist){
-            if (!hotel.getRooms().contains(room) || startDate.isBefore(hotel.getStartNonAvailable()) || endDate.isAfter(hotel.getEndNonAvailable())) {
-                return false;
+    public Boolean isHotelAvailable(Reservation reservation) {
+        if(reservation.getRoom()!=null && reservation.getStartDate()!=null && reservation.getEndDate()!=null){
+            Room room = roomService.getRoomById(reservation.getRoom().getId());
+            if(room!=null && room.getHotel()!=null){
+                Hotel hotel = this.getById(room.getHotel().getId());
+                if(hotel.getEndNonAvailable()==null || hotel.getStartNonAvailable()==null){
+                    return true;
+                }
+                if (reservation.getStartDate().isBefore(hotel.getEndNonAvailable()) || reservation.getEndDate().isAfter(hotel.getStartNonAvailable())) {
+                    return false;
+                }
+            }else {
+                throw new IllegalStateException("cette chambre n'appartient à aucun hotel");
             }
-            return true;
         }else{
-            throw new IllegalStateException("hotel non trouvé");
+            throw new IllegalStateException("les donnés de réservation est invalids");
         }
+            return true;
     }
 
     @Override
