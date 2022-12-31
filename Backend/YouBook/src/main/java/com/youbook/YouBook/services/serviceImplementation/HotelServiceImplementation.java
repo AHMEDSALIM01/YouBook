@@ -78,23 +78,23 @@ public class HotelServiceImplementation implements HotelService {
 
     @Override
     public Boolean isHotelAvailable(Reservation reservation) {
-        if(reservation.getRoom()!=null && reservation.getStartDate()!=null && reservation.getEndDate()!=null){
-            Room room = roomService.getRoomById(reservation.getRoom().getId());
-            if(room!=null && room.getHotel()!=null){
-                Hotel hotel = this.getById(room.getHotel().getId());
-                if(hotel.getEndNonAvailable()==null || hotel.getStartNonAvailable()==null){
-                    return true;
-                }
-                if (reservation.getStartDate().isBefore(hotel.getEndNonAvailable()) || reservation.getEndDate().isAfter(hotel.getStartNonAvailable())) {
-                    return false;
-                }
-            }else {
-                throw new IllegalStateException("cette chambre n'appartient à aucun hotel");
-            }
-        }else{
+        if(reservation.getRoom()==null || reservation.getStartDate()==null || reservation.getEndDate()==null){
             throw new IllegalStateException("les donnés de réservation est invalids");
         }
+        Room room = roomService.getRoomById(reservation.getRoom().getId());
+        if(room==null || room.getHotel()==null){
+            throw new IllegalStateException("cette chambre n'appartient à aucun hotel");
+        }
+        Hotel hotel = this.getById(room.getHotel().getId());
+        if(hotel.getEndNonAvailable()==null || hotel.getStartNonAvailable()==null){
             return true;
+        }
+
+        if (reservation.getStartDate().isBefore(hotel.getEndNonAvailable()) && reservation.getEndDate().isAfter(hotel.getStartNonAvailable())) {
+            return false;
+        }
+            return true;
+
     }
 
     @Override

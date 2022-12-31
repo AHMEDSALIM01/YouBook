@@ -54,7 +54,6 @@ public class ReservationServiceImplementation implements ReservationService {
         if (!isRoomAvailable) {
             throw new IllegalStateException("La chambre n'est pas disponible pour la période donnée");
         }
-
         reservation.setStatus(StatusReservation.En_cours);
         Reservation savedReservation = reservationRepository.save(reservation);
         Room room = roomService.getRoomById(savedReservation.getRoom().getId());
