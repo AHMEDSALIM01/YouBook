@@ -1,13 +1,16 @@
 package com.youbook.YouBook.controllers;
 
+import com.youbook.YouBook.criteria.FilterCriteria;
 import com.youbook.YouBook.entities.Hotel;
 import com.youbook.YouBook.entities.Room;
 import com.youbook.YouBook.services.HotelService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -18,16 +21,64 @@ public class HotelController {
         this.hotelService = hotelService;
     }
     @GetMapping("/")
-    public List<Hotel> getAllHotels(){
-        return hotelService.getAllHotels();
+    public ResponseEntity<List<Hotel>> getAllHotels(){
+        List<Hotel> hotels = hotelService.getAllHotels();
+        return ResponseEntity.ok(hotels);
+    }
+
+    @GetMapping("/hotels")
+    public ResponseEntity<Page<Hotel>> getAllHotels(@RequestParam (defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
+        Page<Hotel> hotels = hotelService.getAllHotels(page, size);
+        return ResponseEntity.ok(hotels);
+    }
+    @PostMapping("/filter")
+    public ResponseEntity<List<Hotel>> getAllHotelsByCriteria(@RequestBody FilterCriteria criteria){
+        List<Hotel> hotels = hotelService.filterByCriteria(criteria);
+        return ResponseEntity.ok(hotels);
+    }
+    @PostMapping("/acceptHotel")
+    public ResponseEntity<Hotel> acceptHotel(@RequestBody Hotel hotel){
+        Hotel response = hotelService.accepteHotel(hotel);
+        if(response != null){
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        }else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(hotel);
+        }
+    }
+    @PostMapping("/refuseHotel")
+    public ResponseEntity<Hotel> refuseHotel(@RequestBody Hotel hotel){
+        Hotel response = hotelService.refuseHotel(hotel);
+        if(response != null){
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        }else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(hotel);
+        }
+    }
+    @PostMapping("nonAvailable")
+    public ResponseEntity makeHotelNonAvailable(@RequestBody Hotel hotel){
+        Hotel response = hotelService.nonAvailable(hotel.getId(),hotel.getStartNonAvailable(),hotel.getEndNonAvailable());
+        if(response!=null){
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        }else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("les donnés de l'hotel est invalid");
+        }
+    }
+    @PostMapping("available")
+    public ResponseEntity makeHotelAvailable(@RequestBody Hotel hotel){
+        Hotel response = hotelService.makeHotelAvailable(hotel.getId());
+        if(response!=null){
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+        }else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("les donnés de l'hotel est invalid");
+        }
     }
     @PostMapping("/addHotel")
     public ResponseEntity addHotel(@Validated @RequestBody Hotel hotel){
         Hotel response = hotelService.addHotel(hotel);
-        if(response != null && response.equals(hotel)){
+        if(response != null){
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
         }else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(hotel);
         }
     }
     @PostMapping("/addRoom/{id}")
