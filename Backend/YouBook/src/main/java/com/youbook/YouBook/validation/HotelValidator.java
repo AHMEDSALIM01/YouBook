@@ -3,6 +3,7 @@ package com.youbook.YouBook.validation;
 import com.youbook.YouBook.entities.Hotel;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +29,18 @@ public class HotelValidator {
             return false;
         }
         errorMessage = "";
+        return true;
+    }
+    public Boolean validDate(LocalDate startDate,LocalDate endDate){
+        if (startDate.isBefore(LocalDate.now())){
+            errorMessage ="la date de début ne doit pas être avant la date d'aujourd'huit'";
+            return false;
+        }
+        if (startDate.isAfter(endDate)){
+            errorMessage ="la date de début ne doit pas être avant la date de fin";
+            return false;
+        }
+        errorMessage="";
         return true;
     }
 

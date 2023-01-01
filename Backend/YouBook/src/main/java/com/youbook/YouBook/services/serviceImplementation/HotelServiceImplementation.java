@@ -9,6 +9,9 @@ import com.youbook.YouBook.repositories.HotelRepository;
 import com.youbook.YouBook.services.HotelService;
 import com.youbook.YouBook.services.RoomService;
 import com.youbook.YouBook.validation.HotelValidator;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -37,7 +40,7 @@ public class HotelServiceImplementation implements HotelService {
                 throw new IllegalStateException("hotel existe déja");
             }
             else {
-                hotel.setStatus(StatusHotel.En_cours);
+                hotel.setStatus(StatusHotel.valueOf("En_cours"));
                 return hotelRepository.save(hotel);
             }
         }else {
@@ -63,6 +66,12 @@ public class HotelServiceImplementation implements HotelService {
     @Override
     public List<Hotel> getAllHotels() {
         return hotelRepository.findAll();
+    }
+
+    @Override
+    public Page<Hotel> getAllHotels(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return hotelRepository.findAll(pageable);
     }
 
     @Override
@@ -125,7 +134,7 @@ public class HotelServiceImplementation implements HotelService {
     public Hotel accepteHotel(Hotel hotel) {
         Boolean hotelExist = hotelRepository.existsById(hotel.getId());
         if(hotelExist){
-            hotel.setStatus(StatusHotel.Accépté);
+            hotel.setStatus(StatusHotel.valueOf("Accépté"));
             return hotelRepository.save(hotel);
         }
         else {
@@ -137,7 +146,7 @@ public class HotelServiceImplementation implements HotelService {
     public Hotel refuseHotel(Hotel hotel) {
         Boolean hotelExist = hotelRepository.existsById(hotel.getId());
         if(hotelExist){
-            hotel.setStatus(StatusHotel.Refusé);
+            hotel.setStatus(StatusHotel.valueOf("Refusé"));
             return hotelRepository.save(hotel);
         }
         else {
@@ -168,7 +177,30 @@ public class HotelServiceImplementation implements HotelService {
 
     @Override
     public Hotel nonAvailable(Long id, LocalDate startNonAvailable, LocalDate endNonAvailable) {
-        return null;
+        Hotel existHotel = hotelRepository.findById(id).orElse(null);
+        Boolean isValidDate = hotelValidator.validDate(startNonAvailable,endNonAvailable);
+        if(existHotel!=null){
+            if(!isValidDate){
+                throw new IllegalStateException(hotelValidator.getErrorMessage());
+            }
+            existHotel.setStartNonAvailable(startNonAvailable);
+            existHotel.setEndNonAvailable(endNonAvailable);
+            return hotelRepository.save(existHotel);
+        }else{
+            throw new IllegalStateException("Hotel non touvé");
+        }
+    }
+
+    @Override
+    public Hotel makeHotelAvailable(Long id) {
+        Hotel existHotel = hotelRepository.findById(id).orElse(null);
+        if(existHotel!=null){
+            existHotel.setStartNonAvailable(null);
+            existHotel.setEndNonAvailable(null);
+            return hotelRepository.save(existHotel);
+        }else{
+            throw new IllegalStateException("Hotel non touvé");
+        }
     }
 
     @Override

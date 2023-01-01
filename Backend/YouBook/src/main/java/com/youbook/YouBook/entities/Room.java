@@ -28,7 +28,7 @@ public class Room implements Serializable {
     private int numberOfBeds;
     @NotNull
     private Double price;
-    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
     @OneToMany(mappedBy = "room",cascade = CascadeType.ALL,fetch = FetchType.LAZY)

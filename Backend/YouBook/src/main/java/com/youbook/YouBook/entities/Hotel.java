@@ -1,6 +1,7 @@
 package com.youbook.YouBook.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.youbook.YouBook.enums.StatusHotel;
 import lombok.AllArgsConstructor;
@@ -40,7 +41,9 @@ public class Hotel implements Serializable {
     @Enumerated(EnumType.STRING)
     private StatusHotel status;
     @OneToMany(mappedBy = "hotel",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("hotel")
     private List<Room> rooms;
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("hotels")
     private List<Users> users;
 }
