@@ -22,17 +22,15 @@ public class UserServiceImplementation implements UserService {
     @Override
     public Users addUser(Users user) {
         Boolean isValidUser = userValidator.validate(user);
-        if(isValidUser){
-            Users userByEmail = userRepository.findByEmail(user.getEmail());
-            if(userByEmail !=null){
-                throw new IllegalStateException("utilisateur existe déja");
-            }else{
-                user.setIs_active(true);
-                return userRepository.save(user);
-            }
-        }else {
+        if(!isValidUser){
             throw new IllegalStateException(userValidator.getErrorMessage());
         }
+        Users userByEmail = userRepository.findByEmail(user.getEmail());
+        if(userByEmail !=null){
+            throw new IllegalStateException("utilisateur existe déja");
+        }
+        user.setIs_active(true);
+        return userRepository.save(user);
 
     }
 
