@@ -4,11 +4,10 @@ import com.youbook.YouBook.entities.Hotel;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Component
 public class HotelValidator {
+
     private String errorMessage;
 
     public boolean validate(Hotel hotel) {
@@ -28,6 +27,7 @@ public class HotelValidator {
             errorMessage = "Le nombre de chambres de l'hôtel doit être supérieur à 0";
             return false;
         }
+
         errorMessage = "";
         return true;
     }
@@ -44,6 +44,27 @@ public class HotelValidator {
         return true;
     }
 
+    public Boolean validateRoom(Hotel hotel){
+        if (hotel.getRooms().isEmpty()){
+            errorMessage="l'hotel ne contient auccune chambres";
+            return false;
+        }
+        if(!hotel.getRooms().isEmpty() && hotel.getRooms().size()!= hotel.getNumberOfRooms()){
+            errorMessage ="l'hotel doit contenir des chambres égales nombres des chambre mentionné ";
+            return false;
+        }
+        errorMessage="";
+        return true;
+    }
+
+    public Boolean validateNumberOfRoom(Hotel hotel){
+        if(hotel.getRooms().size() == hotel.getNumberOfRooms()){
+            errorMessage="le nombre des chambre est saturés merci de modifier le nombre des chambre avant d'ajouter une autre chambre";
+            return false;
+        }
+        errorMessage="";
+        return true;
+    }
     public String getErrorMessage() {
         return errorMessage;
     }

@@ -38,12 +38,28 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public Users updateUser(Long id, Users user) {
-        return null;
+        Users userExist = this.getUserById(id);
+        if(userExist!=null){
+            userExist = user;
+            if(userValidator.validate(userExist)){
+                return userRepository.save(userExist);
+            }else{
+                throw new IllegalStateException(userValidator.getErrorMessage());
+            }
+        }else {
+            throw new IllegalStateException("utilisateur non trouvé");
+        }
     }
 
     @Override
     public Users bannUser(Long id) {
-        return null;
+        Users userExist = this.getUserById(id);
+        if(userExist!=null){
+            userExist.setIs_active(false);
+            return userRepository.save(userExist);
+        }else {
+            throw new IllegalStateException("utilisateur non trouvé");
+        }
     }
 
     @Override
@@ -58,6 +74,6 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public List<Users> getAllUsers() {
-        return null;
+        return userRepository.findAll();
     }
 }

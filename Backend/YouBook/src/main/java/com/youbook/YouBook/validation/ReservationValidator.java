@@ -33,7 +33,7 @@ public class ReservationValidator {
         if(reservation.getTotalPrice() == null){
             errorMessage="le prix total ne doit pas être vide";
         }
-        if (reservation.getRoom() == null || reservation.getRoom().getId() == null) {
+         if(reservation.getRoom() == null || reservation.getRoom().getId() == null) {
             errorMessage="La chambre est invalide";
             return false;
         }else{
@@ -68,6 +68,7 @@ public class ReservationValidator {
             errorMessage="L'utilisateur est invalide";
             return false;
         }
+
         errorMessage="";
         return true;
     }

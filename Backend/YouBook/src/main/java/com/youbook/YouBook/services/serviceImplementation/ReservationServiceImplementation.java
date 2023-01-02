@@ -58,23 +58,67 @@ public class ReservationServiceImplementation implements ReservationService {
         Reservation savedReservation = reservationRepository.save(reservation);
         Room room = roomService.getRoomById(savedReservation.getRoom().getId());
         room.getReservations().add(savedReservation);
+        user.getReservations().add(savedReservation);
+        userService.updateUser(user.getId(),user);
         roomService.updateRoom(room);
         return savedReservation;
     }
 
     @Override
-    public Reservation updateReservation(Long user_id, String ref, Reservation reservation) {
-        return null;
+    public Reservation updateReservation(String ref, Reservation reservation) {
+        if (!reservationValidator.validate(reservation)) {
+            throw new IllegalStateException(reservationValidator.getErrorMessage());
+        }
+        Users user = userService.getUserById(reservation.getUser().getId());
+        if (user == null) {
+            throw new IllegalStateException("utilisateur est invalide");
+        }
+        Reservation reservationToCheck = reservationRepository.getReservationByRef(ref);
+        if (reservationToCheck == null) {
+            throw new IllegalStateException("Réservation non trouvée");
+        }
+        if(reservationToCheck.getStatus() == StatusReservation.valueOf("Confirmé")){
+            throw new IllegalStateException("vous n'avez pas le droit de modifier cette resérvation car elle est déjâ confirmée");
+        }
+        Boolean isHotelAvailable = hotelService.isHotelAvailable(reservation);
+        if(!isHotelAvailable){
+            throw new IllegalStateException("L'hotel n'est pas disponible pour la période donnée");
+        }
+        Boolean isRoomAvailable = roomService.isRoomAvailable(reservation);
+        if (!isRoomAvailable) {
+            throw new IllegalStateException("La chambre n'est pas disponible pour la période donnée");
+        }
+        Reservation savedReservation = reservationRepository.save(reservation);
+        return savedReservation;
     }
 
     @Override
-    public Reservation confirmReservation(String ref) {
-        return null;
+    public Reservation confirmReservation(Reservation reservation) {
+        Reservation reservationToCheck = reservationRepository.getReservationByRef(reservation.getRef());
+        if (reservationToCheck == null) {
+            throw new IllegalStateException("Réservation non trouvée");
+        }
+        if(reservationToCheck.getStatus()==StatusReservation.valueOf("Annulée")){
+            throw new IllegalStateException("Réservation annulé");
+        }
+        reservationToCheck.setStatus(StatusReservation.valueOf("Confirmé"));
+        return reservationRepository.save(reservationToCheck);
     }
 
     @Override
-    public Reservation cancelReservation(String ref) {
-        return null;
+    public Reservation cancelReservation(Reservation reservation) {
+        Reservation reservationToCheck = reservationRepository.getReservationByRef(reservation.getRef());
+
+        if (reservationToCheck == null) {
+            throw new IllegalStateException("Réservation non trouvée");
+        }
+        Room room = reservationToCheck.getRoom();
+        List<Reservation> reservations = room.getReservations();
+        reservations.remove(reservationToCheck);
+        reservationToCheck.setStatus(StatusReservation.valueOf("Annulée"));
+        room.getReservations().add(reservationToCheck);
+        roomService.updateRoom(room);
+        return reservationRepository.save(reservationToCheck);
     }
 
     @Override

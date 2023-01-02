@@ -6,10 +6,9 @@ import com.youbook.YouBook.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -20,6 +19,11 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/")
+    public ResponseEntity getAllUsers(){
+        List<Users> usersList = userService.getAllUsers();
+        return ResponseEntity.ok(usersList);
+    }
     @PostMapping("/addUser")
     public ResponseEntity saveUser(@Validated @RequestBody Users user){
         Users user1 = userService.addUser(user);
@@ -27,6 +31,24 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(user1);
         }else {
             return ResponseEntity.badRequest().body("Donnés non valid");
+        }
+    }
+    @PutMapping("/updateUser/{id}")
+    public ResponseEntity updateUser(@PathVariable Long id,@RequestBody Users user){
+        Users userResponse = userService.updateUser(id,user);
+        if(userResponse!=null){
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(userResponse);
+        }else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Utilisateur n'est pas modifiés");
+        }
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity baneUser(@PathVariable Long id){
+        Users userResponse = userService.bannUser(id);
+        if(userResponse!=null){
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(userResponse);
+        }else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Utilisateur n'est pas supprimé");
         }
     }
 }

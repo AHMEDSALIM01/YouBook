@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -36,7 +35,7 @@ public class HotelController {
         List<Hotel> hotels = hotelService.filterByCriteria(criteria);
         return ResponseEntity.ok(hotels);
     }
-    @PostMapping("/acceptHotel")
+    @PutMapping("/acceptHotel")
     public ResponseEntity<Hotel> acceptHotel(@RequestBody Hotel hotel){
         Hotel response = hotelService.accepteHotel(hotel);
         if(response != null){
@@ -45,7 +44,7 @@ public class HotelController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(hotel);
         }
     }
-    @PostMapping("/refuseHotel")
+    @PutMapping("/refuseHotel")
     public ResponseEntity<Hotel> refuseHotel(@RequestBody Hotel hotel){
         Hotel response = hotelService.refuseHotel(hotel);
         if(response != null){
@@ -54,7 +53,7 @@ public class HotelController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(hotel);
         }
     }
-    @PostMapping("nonAvailable")
+    @PutMapping("nonAvailable")
     public ResponseEntity makeHotelNonAvailable(@RequestBody Hotel hotel){
         Hotel response = hotelService.nonAvailable(hotel.getId(),hotel.getStartNonAvailable(),hotel.getEndNonAvailable());
         if(response!=null){
@@ -63,7 +62,7 @@ public class HotelController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("les donnés de l'hotel est invalid");
         }
     }
-    @PostMapping("available")
+    @PutMapping("available")
     public ResponseEntity makeHotelAvailable(@RequestBody Hotel hotel){
         Hotel response = hotelService.makeHotelAvailable(hotel.getId());
         if(response!=null){
@@ -83,7 +82,7 @@ public class HotelController {
     }
     @PostMapping("/addRoom/{id}")
     public ResponseEntity addRoom(@PathVariable Long id,@Validated @RequestBody Room room){
-        Room response = hotelService.addRoom(id,room);
+        Room response = hotelService.addRoom(id, room);
         if(response.equals(room)){
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
         }else {

@@ -14,7 +14,6 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data
@@ -29,8 +28,8 @@ public class Hotel implements Serializable {
     @NotNull
     @Column(unique = true)
     private String name;
-    @Column(unique = true)
     @NotNull
+    @Column(unique = true)
     private String address;
     @NotNull
     private String city;
@@ -43,7 +42,8 @@ public class Hotel implements Serializable {
     @OneToMany(mappedBy = "hotel",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     @JsonIgnoreProperties("hotel")
     private List<Room> rooms;
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
     @JsonIgnoreProperties("hotels")
-    private List<Users> users;
+    private Users owner;
 }
