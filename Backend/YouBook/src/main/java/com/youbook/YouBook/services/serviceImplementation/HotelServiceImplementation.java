@@ -11,12 +11,12 @@ import com.youbook.YouBook.services.HotelService;
 import com.youbook.YouBook.services.RoomService;
 import com.youbook.YouBook.services.UserService;
 import com.youbook.YouBook.validation.HotelValidator;
-import org.apache.catalina.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.*;
 import java.time.LocalDate;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Service
 public class HotelServiceImplementation implements HotelService {
     private  HotelRepository hotelRepository;
     private RoomService roomService;
@@ -92,7 +92,7 @@ public class HotelServiceImplementation implements HotelService {
     @Override
     public Page<Hotel> getAllHotels(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return hotelRepository.findAll(pageable);
+        return hotelRepository.findAllByStatus(pageable,StatusHotel.Accépté);
     }
 
     @Override

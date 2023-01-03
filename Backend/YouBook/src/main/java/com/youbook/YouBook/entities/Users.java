@@ -1,25 +1,23 @@
 package com.youbook.YouBook.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.core.annotation.Order;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Users implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,18 +30,32 @@ public class Users implements Serializable {
     @NotNull
     private String phoneNumber;
     @NotNull
-    @Column(unique = true)
+    @Column(updatable = false,unique = true)
     @Email
-    public String email;
+    private String email;
     @NotNull
-    public String password;
-    public Boolean is_active;
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String password;
+    private Boolean is_active;
+    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private Set<Role> roles;
+    @JsonIgnore
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private List<Reservation> reservations;
+    private Set<Reservation> reservations;
     @OneToMany (mappedBy = "owner",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("owner")
-    private List<Hotel> hotels;
+    @JsonIgnore
+    private Set<Hotel> hotels;
+
+    @Override
+    public String toString() {
+        return "Users{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", is_active=" + is_active +
+                '}';
+    }
 }

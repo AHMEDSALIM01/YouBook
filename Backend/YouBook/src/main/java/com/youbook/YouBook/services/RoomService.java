@@ -7,11 +7,10 @@ import com.youbook.YouBook.entities.Room;
 import java.util.List;
 
 public interface RoomService {
-    Room addRoom(Hotel hotel, Room roomDto);
-    Room updateRoom(Room roomDto);
-    Room deleteRoom(Room roomDto);
+    Room addRoom(Hotel hotel, Room room);
+    Room updateRoom(Room room);
+    Room deleteRoom(Room room);
     List<Room> getAllRooms();
-    Room getRoomByNumberAndHotelName(Hotel hotel, int number);
     Boolean isRoomAvailable(Reservation reservation);
     Room getRoomById(Long id);
 }

@@ -8,12 +8,13 @@ import com.youbook.YouBook.repositories.RoomRepository;
 import com.youbook.YouBook.services.RoomService;
 import com.youbook.YouBook.validation.RoomValidator;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Service
 public class RoomServiceImplementation implements RoomService {
     private RoomRepository roomRepository;
     private RoomValidator roomValidator;
@@ -24,37 +25,42 @@ public class RoomServiceImplementation implements RoomService {
     @Override
     public Room addRoom(Hotel hotel, Room room) {
         Boolean validateRoom = roomValidator.validate(room);
-        if(validateRoom){
-            Room room1 = roomRepository.findByHotelIdAndNumber(hotel.getId(), room.getNumber());
-            if (room1 !=null){
-                throw new IllegalStateException("chambre existe déja");
-            }else {
-                room.setHotel(hotel);
-                return roomRepository.save(room);
-            }
-        }else{
+        if(!validateRoom){
             throw new IllegalStateException(roomValidator.getErrorMessage());
         }
+        Room room1 = roomRepository.findByHotelIdAndNumber(hotel.getId(), room.getNumber());
+        if (room1 !=null){
+            throw new IllegalStateException("chambre existe déja");
+        }
+        room.setHotel(hotel);
+        return roomRepository.save(room);
     }
 
     @Override
     public Room updateRoom(Room room) {
-        return null;
+        Boolean validateRoom = roomValidator.validate(room);
+        if(!validateRoom){
+            throw new IllegalStateException(roomValidator.getErrorMessage());
+        }
+        return roomRepository.save(room);
     }
 
     @Override
     public Room deleteRoom(Room room) {
-        return null;
+        if(room.getId()==null){
+            throw new IllegalStateException("la chambre doit contenir un Id");
+        }
+        Room roomExist = this.getRoomById(room.getId());
+        if(roomExist ==null){
+            throw new IllegalStateException("la chambre n'est pas trouvée");
+        }
+        roomRepository.deleteById(room.getId());
+        return room;
     }
 
     @Override
     public List<Room> getAllRooms() {
-        return null;
-    }
-
-    @Override
-    public Room getRoomByNumberAndHotelName(Hotel hotel, int number) {
-        return null;
+        return roomRepository.findAll();
     }
 
     @Override
@@ -64,8 +70,8 @@ public class RoomServiceImplementation implements RoomService {
         Room room = this.getRoomById(reservation.getRoom().getId());
         if(room !=null){
             for (Reservation r : room.getReservations()) {
-                if (r!=null && r.getStatus() == StatusReservation.En_cours &&
-                        (r.getStartDate().isBefore(endDate) && r.getEndDate().isAfter(startDate))) {
+                if ((r!=null && (r.getStatus() == StatusReservation.En_cours || r.getStatus() == StatusReservation.Confirmée) &&
+                        (r.getStartDate().isBefore(endDate) && r.getEndDate().isAfter(startDate))) || r.getUser().getId()!=reservation.getUser().getId()) {
                     return false;
                 }
             }
@@ -76,10 +82,9 @@ public class RoomServiceImplementation implements RoomService {
     @Override
     public Room getRoomById(Long id) {
         Optional<Room> room = roomRepository.findById(id);
-        if(room.isPresent()){
-            return room.get();
-        }else {
+        if(!room.isPresent()){
             throw new IllegalStateException("la chambre non trouvé");
         }
+        return room.get();
     }
 }

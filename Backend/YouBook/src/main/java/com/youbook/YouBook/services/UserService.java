@@ -12,5 +12,8 @@ public interface UserService {
     Users bannUser(Long id);
     Users getUserById(Long id);
     List<Users> getAllUsers();
+    void addRoleToUser(String email,String roleName);
+    Users loadUserByEmail(String email);
+
 
 }
