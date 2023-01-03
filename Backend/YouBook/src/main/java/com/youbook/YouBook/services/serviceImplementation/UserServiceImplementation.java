@@ -90,7 +90,6 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public Users loadUserByEmail(String email) {
-        System.out.println(email);
         Boolean isValidEmail = userValidator.validateEmail(email);
         if(!isValidEmail){
             throw new IllegalStateException(userValidator.getErrorMessage());

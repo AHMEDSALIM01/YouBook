@@ -2,6 +2,7 @@ package com.youbook.YouBook.security.filters;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -42,5 +45,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withClaim("roles",user.getAuthorities().stream().map(ga->ga.getAuthority()).collect(Collectors.toList()))
                 .sign(algorithm);
         response.setHeader("Authorization",jwtAccessToken);
+        String jwtRefreshToken = JWT.create().withSubject(user.getUsername())
+                .withExpiresAt(new Date(System.currentTimeMillis()+15*60*1000))
+                .withIssuer(request.getRequestURL().toString())
+                .sign(algorithm);
+        Map<String,String> idToken = new HashMap<>();
+        idToken.put("access-token",jwtAccessToken);
+        idToken.put("refresh-token",jwtRefreshToken);
+        response.setContentType("application/json");
+        new ObjectMapper().writeValue(response.getOutputStream(),idToken);
     }
 }

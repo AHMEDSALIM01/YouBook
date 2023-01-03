@@ -5,6 +5,7 @@ import com.youbook.YouBook.repositories.UserRepository;
 import com.youbook.YouBook.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +21,13 @@ public class UserController {
     }
 
     @GetMapping("/")
+    @PostAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity getAllUsers(){
         List<Users> usersList = userService.getAllUsers();
         return ResponseEntity.ok(usersList);
     }
     @PostMapping("/addUser")
+    @PostAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity saveUser(@Validated @RequestBody Users user){
         Users user1 = userService.addUser(user);
         if(user1 != null){
@@ -34,6 +37,7 @@ public class UserController {
         }
     }
     @PutMapping("/updateUser/{id}")
+    @PostAuthorize("#user.email = authentication.name or hasAuthority('ADMIN')")
     public ResponseEntity updateUser(@PathVariable Long id,@RequestBody Users user){
         Users userResponse = userService.updateUser(id,user);
         if(userResponse!=null){
@@ -43,6 +47,7 @@ public class UserController {
         }
     }
     @PutMapping("/{id}")
+    @PostAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity baneUser(@PathVariable Long id){
         Users userResponse = userService.bannUser(id);
         if(userResponse!=null){
