@@ -10,6 +10,7 @@ import com.youbook.YouBook.validation.UserValidator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +22,7 @@ public class UserServiceImplementation implements UserService {
     private PasswordEncoder passwordEncoder;
     private RoleService roleService;
 
-    public UserServiceImplementation(UserRepository userRepository,RoleService roleService, UserValidator userValidator,PasswordEncoder passwordEncoder) {
+    public UserServiceImplementation(UserRepository userRepository, RoleService roleService, UserValidator userValidator, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.userValidator = userValidator;
         this.passwordEncoder = passwordEncoder;
@@ -30,23 +31,23 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
-    public Users signUp(String roleName,Users user) {
+    public Users signUp(String roleName, Users user) {
         Boolean isValidUser = userValidator.validate(user);
-        if(!isValidUser){
+        if (!isValidUser) {
             throw new IllegalStateException(userValidator.getErrorMessage());
         }
         Users userByEmail = userRepository.findByEmail(user.getEmail());
-        if(userByEmail !=null){
+        if (userByEmail != null) {
             throw new IllegalStateException("utilisateur existe déja");
         }
-        if(roleName == null){
+        if (roleName == null) {
             throw new IllegalStateException("nom de role ne doit pas être vide ");
         }
-        if(roleName == "ADMIN"){
+        if (roleName == "ADMIN") {
             throw new IllegalStateException("nom de role Invalid");
         }
         Role role = roleService.getRoleByName(roleName);
-        if(role == null){
+        if (role == null) {
             throw new IllegalStateException("role non trouvée");
         }
         user.getRoles().add(role);
@@ -58,28 +59,28 @@ public class UserServiceImplementation implements UserService {
     @Override
     public Users addUser(UserDto userDto) {
         Users user = new Users();
-       user.setName(userDto.getName());
-       user.setPassword(userDto.getPassword());
-       user.setPhoneNumber(userDto.getPhoneNumber());
-       user.setAddress(userDto.getAddress());
-       user.setEmail(userDto.getEmail());
+        user.setName(userDto.getName());
+        user.setPassword(userDto.getPassword());
+        user.setPhoneNumber(userDto.getPhoneNumber());
+        user.setAddress(userDto.getAddress());
+        user.setEmail(userDto.getEmail());
         Boolean isValidUser = userValidator.validate(user);
-        if(!isValidUser){
+        if (!isValidUser) {
             throw new IllegalStateException(userValidator.getErrorMessage());
         }
         Users userByEmail = userRepository.findByEmail(user.getEmail());
-        if(userByEmail !=null){
+        if (userByEmail != null) {
             throw new IllegalStateException("utilisateur existe déja");
         }
         Role roleCheck = roleService.getRoleByName(userDto.getRoleName());
-        if (roleCheck==null){
+        if (roleCheck == null) {
             throw new IllegalStateException("role non trouvée");
         }
 
         user.setIs_active(true);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Users userSaved = userRepository.save(user);
-        Users userWithRole=this.addRoleToUser(user.getEmail(),roleCheck.getName());
+        Users userWithRole = this.addRoleToUser(user.getEmail(), roleCheck.getName());
         return userWithRole;
 
     }
@@ -87,27 +88,27 @@ public class UserServiceImplementation implements UserService {
     @Override
     public Users updateUser(Long id, Users user) {
         Users userExist = this.getUserById(id);
-        if(userExist==null){
+        if (userExist == null) {
             throw new IllegalStateException("utilisateur non trouvé");
         }
 
-        if(!userValidator.validate(user)){
+        if (!userValidator.validate(user)) {
             throw new IllegalStateException(userValidator.getErrorMessage());
         }
         userExist.setName(user.getName());
-        if(user.getIs_active()!=null){
+        if (user.getIs_active() != null) {
             userExist.setIs_active(user.getIs_active());
         }
         userExist.setAddress(user.getAddress());
         userExist.setPhoneNumber(user.getPhoneNumber());
-        userExist.setPassword(passwordEncoder.encode(userExist.getPassword()));
+        userExist.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(userExist);
     }
 
     @Override
     public Users bannUser(Long id) {
         Users userExist = this.getUserById(id);
-        if(userExist==null){
+        if (userExist == null) {
             throw new IllegalStateException("utilisateur non trouvé");
         }
         userExist.setIs_active(false);
@@ -117,9 +118,9 @@ public class UserServiceImplementation implements UserService {
     @Override
     public Users getUserById(Long id) {
         Optional<Users> user = userRepository.findById(id);
-        if(user.isPresent()){
+        if (user.isPresent()) {
             return user.get();
-        }else{
+        } else {
             throw new IllegalStateException("utilisateur non trouvée");
         }
     }
@@ -133,7 +134,7 @@ public class UserServiceImplementation implements UserService {
     public Users addRoleToUser(String email, String roleName) {
         Users user = this.loadUserByEmail(email);
         Role role = roleService.getRoleByName(roleName);
-        if(user.getRoles()==null){
+        if (user.getRoles() == null) {
             throw new IllegalStateException("role is null");
         }
         user.getRoles().add(role);
@@ -143,13 +144,14 @@ public class UserServiceImplementation implements UserService {
     @Override
     public Users loadUserByEmail(String email) {
         Boolean isValidEmail = userValidator.validateEmail(email);
-        if(!isValidEmail){
+        if (!isValidEmail) {
             throw new IllegalStateException(userValidator.getErrorMessage());
         }
         Users userByEmail = userRepository.findByEmail(email);
-        if(userByEmail == null){
+        if (userByEmail == null) {
             throw new IllegalStateException("l'adresse email ou password est invalid");
         }
         return userByEmail;
     }
+
 }

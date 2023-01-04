@@ -4,6 +4,7 @@ import com.youbook.YouBook.dtos.UserDto;
 import com.youbook.YouBook.entities.Users;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 
 @Service
@@ -16,5 +17,4 @@ public interface UserService {
     List<Users> getAllUsers();
     Users addRoleToUser(String email,String roleName);
     Users loadUserByEmail(String email);
-
 }

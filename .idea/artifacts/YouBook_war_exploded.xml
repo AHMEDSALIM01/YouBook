@@ -55,7 +55,6 @@
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.module:jackson-module-parameter-names:2.13.4" />
           <element id="library" level="project" name="Maven: org.springframework:spring-web:5.3.23" />
           <element id="library" level="project" name="Maven: org.springframework:spring-webmvc:5.3.23" />
-          <element id="library" level="project" name="Maven: org.springframework:spring-expression:5.3.23" />
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot:2.7.5" />
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-autoconfigure:2.7.5" />
           <element id="library" level="project" name="Maven: com.mysql:mysql-connector-j:8.0.31" />
@@ -80,6 +79,7 @@
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.13.4.2" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.13.4" />
           <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.13.4" />
+          <element id="library" level="project" name="Maven: org.springframework:spring-expression:5.3.23" />
         </element>
       </element>
       <element id="directory" name="META-INF">
