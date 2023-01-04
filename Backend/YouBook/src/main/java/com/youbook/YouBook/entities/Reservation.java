@@ -2,6 +2,7 @@ package com.youbook.YouBook.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.uuid.Generators;
 import com.youbook.YouBook.enums.StatusReservation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +13,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Calendar;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -31,7 +32,7 @@ public class Reservation implements Serializable {
     private LocalDate endDate;
     private Double totalPrice;
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "String default En_cours")
+    @Column(updatable = false)
     private StatusReservation status;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "room_id")
@@ -39,13 +40,10 @@ public class Reservation implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private Users user;
-    @Transient
-    private static long counter = 0;
     @PrePersist
     public void generateReference() {
-        int year = Calendar.getInstance().get(Calendar.YEAR);
-        this.id = ++counter;
-        this.ref = "Reservation N°" + year + "/" + this.id;
+        UUID uuid = Generators.timeBasedGenerator().generate();
+        this.ref = uuid.toString();
     }
 
 }

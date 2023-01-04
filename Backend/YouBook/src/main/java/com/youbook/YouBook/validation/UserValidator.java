@@ -26,6 +26,23 @@ public class UserValidator {
         }
         return true;
     }
+    public Boolean validateEmail(String email){
+        if(email == null || !email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")){
+            errorMessage ="L'adresse email est invalide";
+            return false;
+        }
+        errorMessage = "";
+        return true;
+    }
+
+    public Boolean validatePassword(String password){
+        if (password == null || password.matches("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$")) {
+            errorMessage = "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre";
+            return false;
+        }
+        errorMessage = "";
+        return true;
+    }
 
     public String getErrorMessage() {
         return errorMessage;

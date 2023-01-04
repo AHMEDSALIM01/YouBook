@@ -11,9 +11,13 @@ import com.youbook.YouBook.services.RoomService;
 import com.youbook.YouBook.services.UserService;
 import com.youbook.YouBook.validation.ReservationValidator;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
-@Component
+import java.util.Optional;
+
+@Service
 public class ReservationServiceImplementation implements ReservationService {
     private UserService userService;
     private HotelService hotelService;
@@ -54,7 +58,10 @@ public class ReservationServiceImplementation implements ReservationService {
         if (!isRoomAvailable) {
             throw new IllegalStateException("La chambre n'est pas disponible pour la période donnée");
         }
+        int numberOfDays = (int) ChronoUnit.DAYS.between(reservation.getStartDate(), reservation.getEndDate());
+        Double totalPrice =Double.valueOf(Math.round(reservation.getRoom().getPrice()*numberOfDays*100)/100d);
         reservation.setStatus(StatusReservation.En_cours);
+        reservation.setTotalPrice(totalPrice);
         Reservation savedReservation = reservationRepository.save(reservation);
         Room room = roomService.getRoomById(savedReservation.getRoom().getId());
         room.getReservations().add(savedReservation);
@@ -77,7 +84,7 @@ public class ReservationServiceImplementation implements ReservationService {
         if (reservationToCheck == null) {
             throw new IllegalStateException("Réservation non trouvée");
         }
-        if(reservationToCheck.getStatus() == StatusReservation.valueOf("Confirmé")){
+        if(reservationToCheck.getStatus() == StatusReservation.valueOf("Confirmée")){
             throw new IllegalStateException("vous n'avez pas le droit de modifier cette resérvation car elle est déjâ confirmée");
         }
         Boolean isHotelAvailable = hotelService.isHotelAvailable(reservation);
@@ -88,7 +95,13 @@ public class ReservationServiceImplementation implements ReservationService {
         if (!isRoomAvailable) {
             throw new IllegalStateException("La chambre n'est pas disponible pour la période donnée");
         }
-        Reservation savedReservation = reservationRepository.save(reservation);
+        int numberOfDays = (int) ChronoUnit.DAYS.between(reservation.getStartDate(), reservation.getEndDate());
+        Double totalPrice =Double.valueOf(Math.round(reservation.getRoom().getPrice()*numberOfDays*100)/100d);
+        reservationToCheck.setTotalPrice(totalPrice);
+        reservationToCheck.setStartDate(reservation.getStartDate());
+        reservationToCheck.setEndDate(reservation.getEndDate());
+        reservationToCheck.setRoom(reservation.getRoom());
+        Reservation savedReservation = reservationRepository.save(reservationToCheck);
         return savedReservation;
     }
 
@@ -128,11 +141,19 @@ public class ReservationServiceImplementation implements ReservationService {
 
     @Override
     public Reservation getReservationByRef(String ref) {
-        return null;
+        Reservation reservation = reservationRepository.getReservationByRef(ref);
+        if(reservation == null){
+            throw new IllegalStateException("resérvation non trouvée");
+        }
+        return reservation;
     }
 
     @Override
     public Reservation getReservationById(Long id) {
-        return null;
+        Optional<Reservation> reservation = reservationRepository.findById(id);
+        if (!reservation.isPresent()){
+            throw new IllegalStateException("réservation non trouvés");
+        }
+        return reservation.get();
     }
 }

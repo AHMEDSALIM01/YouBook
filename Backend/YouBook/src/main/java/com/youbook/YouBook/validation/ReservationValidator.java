@@ -41,10 +41,7 @@ public class ReservationValidator {
             Hotel hotel = hotelService.getById(room.getHotel().getId());
 
             int numberOfDays = (int) ChronoUnit.DAYS.between(reservation.getStartDate(), reservation.getEndDate());
-            System.out.println(numberOfDays);
             Double totalPrice =Double.valueOf(Math.round(room.getPrice()*numberOfDays*100)/100d);
-            System.out.println(totalPrice);
-            System.out.println(reservation.getTotalPrice());
             if(!totalPrice.equals(reservation.getTotalPrice())){
                 errorMessage ="le Prix total invalide";
                 return false;

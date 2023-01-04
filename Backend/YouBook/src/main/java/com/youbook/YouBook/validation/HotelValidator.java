@@ -49,10 +49,7 @@ public class HotelValidator {
             errorMessage="l'hotel ne contient auccune chambres";
             return false;
         }
-        if(!hotel.getRooms().isEmpty() && hotel.getRooms().size()!= hotel.getNumberOfRooms()){
-            errorMessage ="l'hotel doit contenir des chambres égales nombres des chambre mentionné ";
-            return false;
-        }
+
         errorMessage="";
         return true;
     }
