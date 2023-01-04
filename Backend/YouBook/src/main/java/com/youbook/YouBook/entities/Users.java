@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -38,7 +39,7 @@ public class Users implements Serializable {
     private String password;
     private Boolean is_active;
     @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-    private Set<Role> roles;
+    private Set<Role> roles=new HashSet<>();
     @JsonIgnore
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<Reservation> reservations;
