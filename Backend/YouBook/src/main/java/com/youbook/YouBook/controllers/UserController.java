@@ -4,6 +4,9 @@ import com.youbook.YouBook.dtos.UserDto;
 import com.youbook.YouBook.entities.Users;
 import com.youbook.YouBook.repositories.UserRepository;
 import com.youbook.YouBook.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -25,8 +28,10 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
     private UserService userService;
+    private ExpressionParser expressionParser;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService,ExpressionParser expressionParser) {
+        this.expressionParser = expressionParser;
         this.userService = userService;
     }
 
@@ -46,13 +51,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(user1);
     }
     @PutMapping("/updateUser/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or #user.email == authentication.name")
     public ResponseEntity updateUser(@PathVariable Long id, @RequestBody Users user){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String emailCurrentUser = authentication.getName();
-        Collection roleCurrentUser = authentication.getAuthorities();
         Users userCheck = userService.getUserById(id);
-        if(!roleCurrentUser.contains(new SimpleGrantedAuthority("ADMIN")) && !userCheck.getEmail().equals(emailCurrentUser)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Vous n'avez pas le droit de mettre à jour cet utilisateur");
+        if(!userCheck.getEmail().equals(user.getEmail())){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("L'adresse email ne doit pas changer");
         }
         Users userResponse = userService.updateUser(id,user);
         if(userResponse!=null){
