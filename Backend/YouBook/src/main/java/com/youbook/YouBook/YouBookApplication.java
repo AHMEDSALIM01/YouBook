@@ -26,8 +26,4 @@ public class YouBookApplication {
 	PasswordEncoder passwordEncoder(){
 		return new BCryptPasswordEncoder();
 	}
-	@Bean
-	ExpressionParser expressionParser(){
-		return new SpelExpressionParser();
-	}
 }

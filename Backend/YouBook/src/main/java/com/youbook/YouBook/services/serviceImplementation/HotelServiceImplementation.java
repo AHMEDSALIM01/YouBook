@@ -15,10 +15,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.criteria.*;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,8 +80,12 @@ public class HotelServiceImplementation implements HotelService {
             throw new IllegalStateException("l'hotel doit contenir un propritaire");
         }
         Users owner = userService.getUserById(hotel.getOwner().getId());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(owner == null){
-            throw new IllegalStateException("le propritaire de cette Hotel n'existe pas");
+            throw new IllegalStateException("le propritaire de ce Hotel n'existe pas");
+        }
+        if(owner.getEmail() != authentication.getName()){
+            throw new IllegalStateException("vous n'avez pas le droit de modifier ce Hotel");
         }
         Hotel hotelSaved = hotelRepository.save(hotel);
         return hotelRepository.save(hotelSaved);
@@ -100,6 +107,17 @@ public class HotelServiceImplementation implements HotelService {
         Boolean hotelExist = hotelRepository.existsById(hotel.getId());
         if(!hotelExist){
             throw new IllegalStateException("Hotel N°" + hotel.getId() + " non trouvé");
+        }
+        if(hotel.getOwner() == null || hotel.getOwner().getId()==null){
+            throw new IllegalStateException("l'hotel doit contenir un propritaire");
+        }
+        Users owner = userService.getUserById(hotel.getOwner().getId());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(owner == null){
+            throw new IllegalStateException("le propritaire de ce Hotel n'existe pas");
+        }
+        if(owner.getEmail() != authentication.getName()){
+            throw new IllegalStateException("vous n'avez pas le droit de modifier ce Hotel");
         }
         hotelRepository.deleteById(hotel.getId());
         return hotel;
@@ -203,6 +221,17 @@ public class HotelServiceImplementation implements HotelService {
         if(!isValidDate){
             throw new IllegalStateException(hotelValidator.getErrorMessage());
         }
+        if(existHotel.getOwner() == null || existHotel.getOwner().getId()==null){
+            throw new IllegalStateException("l'hotel doit contenir un propritaire");
+        }
+        Users owner = userService.getUserById(existHotel.getOwner().getId());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(owner == null){
+            throw new IllegalStateException("le propritaire de ce Hotel n'existe pas");
+        }
+        if(owner.getEmail() != authentication.getName()){
+            throw new IllegalStateException("vous n'avez pas le droit de modifier ce Hotel");
+        }
         existHotel.setStartNonAvailable(startNonAvailable);
         existHotel.setEndNonAvailable(endNonAvailable);
         return hotelRepository.save(existHotel);
@@ -214,6 +243,17 @@ public class HotelServiceImplementation implements HotelService {
         if(existHotel==null){
             throw new IllegalStateException("Hotel non touvé");
         }
+        if(existHotel.getOwner() == null || existHotel.getOwner().getId()==null){
+            throw new IllegalStateException("l'hotel doit contenir un propritaire");
+        }
+        Users owner = userService.getUserById(existHotel.getOwner().getId());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(owner == null){
+            throw new IllegalStateException("le propritaire de ce Hotel n'existe pas");
+        }
+        if(owner.getEmail() != authentication.getName()){
+            throw new IllegalStateException("vous n'avez pas le droit de modifier ce Hotel");
+        }
         existHotel.setStartNonAvailable(null);
         existHotel.setEndNonAvailable(null);
         return hotelRepository.save(existHotel);
@@ -224,6 +264,17 @@ public class HotelServiceImplementation implements HotelService {
         Hotel existHotel = hotelRepository.findById(id).orElse(null);
         if(existHotel==null){
             throw new IllegalStateException("Hotel non touvé");
+        }
+        if(existHotel.getOwner() == null || existHotel.getOwner().getId()==null){
+            throw new IllegalStateException("l'hotel doit contenir un propritaire");
+        }
+        Users owner = userService.getUserById(existHotel.getOwner().getId());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(owner == null){
+            throw new IllegalStateException("le propritaire de ce Hotel n'existe pas");
+        }
+        if(owner.getEmail() != authentication.getName()){
+            throw new IllegalStateException("vous n'avez pas le droit de modifier ce Hotel");
         }
         Room savedRoom = roomService.addRoom(existHotel,room);
         existHotel.getRooms().add(savedRoom);
