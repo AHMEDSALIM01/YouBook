@@ -151,7 +151,7 @@ public class HotelServiceImplementation implements HotelService {
             public Predicate toPredicate(Root<Hotel> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> predicates = new ArrayList<>();
                 if(criteria.getCity()!=null){
-                    predicates.add(cb.equal(root.get("city"),criteria.getCity()));
+                    predicates.add(cb.like(root.get("city"),"%" +criteria.getCity() + "%"));
                 }
                 if(criteria.getHotelName()!=null){
                     predicates.add(cb.like(root.get("name"), "%" + criteria.getHotelName() + "%"));
