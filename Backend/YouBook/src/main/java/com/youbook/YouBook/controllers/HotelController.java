@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/Hotel")
+@RequestMapping("/hotel")
 public class HotelController {
     private HotelService hotelService;
     protected HotelController(HotelService hotelService){
@@ -26,12 +26,12 @@ public class HotelController {
     }
 
     @GetMapping("/hotels")
-    public ResponseEntity<Page<Hotel>> getAllHotels(@RequestParam (defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
-        Page<Hotel> hotels = hotelService.getAllHotels(page, size);
+    public ResponseEntity<Page<Hotel>> getAllHotels(@RequestParam (defaultValue = "0") int page){
+        Page<Hotel> hotels = hotelService.getAllHotels(page, 10);
         return ResponseEntity.ok(hotels);
     }
     @PostMapping("/filter")
-    public ResponseEntity<List<Hotel>> getAllHotelsByCriteria(@RequestBody FilterCriteria criteria){
+    public ResponseEntity getAllHotelsByCriteria(@RequestBody FilterCriteria criteria){
         List<Hotel> hotels = hotelService.filterByCriteria(criteria);
         return ResponseEntity.ok(hotels);
     }
@@ -53,7 +53,7 @@ public class HotelController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(hotel);
         }
     }
-    @PutMapping("nonAvailable")
+    @PutMapping("/nonAvailable")
     public ResponseEntity makeHotelNonAvailable(@RequestBody Hotel hotel){
         Hotel response = hotelService.nonAvailable(hotel.getId(),hotel.getStartNonAvailable(),hotel.getEndNonAvailable());
         if(response!=null){
@@ -62,7 +62,7 @@ public class HotelController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("les donnés de l'hotel est invalid");
         }
     }
-    @PutMapping("available")
+    @PutMapping("/available")
     public ResponseEntity makeHotelAvailable(@RequestBody Hotel hotel){
         Hotel response = hotelService.makeHotelAvailable(hotel.getId());
         if(response!=null){
@@ -89,5 +89,15 @@ public class HotelController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
+    @GetMapping("/{id}")
+    public ResponseEntity getHotel(@PathVariable Long id){
+        Hotel hotel = hotelService.getById(id);
+        if(hotel!=null){
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(hotel);
+        }else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Hotel N° "+id+"n'existe pas");
+        }
+    }
+
 
 }

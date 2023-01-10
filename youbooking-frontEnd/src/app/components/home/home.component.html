@@ -1,0 +1,126 @@
+<div class="home" *ngIf="hotels">
+  <div class="home_slider_container">
+    <div class="owl-carousel owl-theme home_slider">
+      <div class="slide">
+        <div class="background_image" [ngStyle]="{'background-image':'url(assets/images/index_1.jpg)'}"></div>
+        <div class="home_container">
+          <div class="container">
+            <div class="row">
+              <div class="col">
+                <div class="home_content text-center">
+                  <div class="home_title">A Luxury Stay</div>
+                  <div class="booking_form_container">
+                    <form (submit)="onSubmit()">
+                      <div class="d-flex flex-xl-row flex-column align-items-start justify-content-start">
+                        <div class="booking_input_container d-flex flex-lg-row flex-column align-items-start justify-content-start">
+                          <input type="text" class="datepicker booking_input booking_input_a booking_in has-validation" [(ngModel)]="filterCriteria.availabilityStart" name ="availabilityStart" placeholder="Date de début">
+                          <input type="text" class="datepicker booking_input booking_input_a booking_out" [(ngModel)]="filterCriteria.availabilityEnd" name ="availabilityEnd" placeholder="Date de fin">
+                          <input type="text" class="booking_input booking_input_a" [(ngModel)]="filterCriteria.hotelName" name="hotelName" placeholder="Nom de l'hotel">
+                          <input type="text" class="booking_input booking_input_a" [(ngModel)]="filterCriteria.city" name="city" placeholder="Ville">
+                          <input type="number" class="booking_input booking_input_a" [(ngModel)]="filterCriteria.prixMin" name="prixMin" placeholder="Prix min">
+                          <input type="number" class="booking_input booking_input_a" [(ngModel)]="filterCriteria.prixMax" name="prixMax" placeholder="Prix max">
+                        </div>
+                        <div><input type="submit" class="booking_button trans_200" value="Rechercher"></div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="features">
+  <div class="container">
+    <div class="row">
+
+      <div class="col-lg-4 icon_box_col">
+        <div class="icon_box d-flex flex-column align-items-center justify-content-start text-center">
+          <div class="icon_box_icon"><img src="assets/images/icon_1.svg" class="svg" alt="https://www.flaticon.com/authors/monkik"></div>
+          <div class="icon_box_title"><h2>Fabulous Resort</h2></div>
+          <div class="icon_box_text">
+            <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Suspendisse nec faucibus velit. Quisque eleifend orci ipsum, a bibendum.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 icon_box_col">
+        <div class="icon_box d-flex flex-column align-items-center justify-content-start text-center">
+          <div class="icon_box_icon"><img src="assets/images/icon_2.svg" class="svg" alt="https://www.flaticon.com/authors/monkik"></div>
+          <div class="icon_box_title"><h2>Infinity Pool</h2></div>
+          <div class="icon_box_text">
+            <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Suspendisse nec faucibus velit. Quisque eleifend orci ipsum, a bibendum.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4 icon_box_col">
+        <div class="icon_box d-flex flex-column align-items-center justify-content-start text-center">
+          <div class="icon_box_icon"><img src="assets/images/icon_3.svg" class="svg" alt="https://www.flaticon.com/authors/monkik"></div>
+          <div class="icon_box_title"><h2>Luxury Rooms</h2></div>
+          <div class="icon_box_text">
+            <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Suspendisse nec faucibus velit. Quisque eleifend orci ipsum, a bibendum.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="gallery">
+  <div class="gallery_slider_container">
+    <div class="owl-carousel owl-theme gallery_slider row g-0">
+
+      <div class="gallery_item col-md-3">
+        <div class="background_image" [ngStyle]="{'background-image':'url(assets/images/gallery_1.jpg)'}"></div>
+        <a class="colorbox" href="assets/images/gallery_1.jpg"></a>
+      </div>
+
+      <div class="gallery_item col-md-3">
+        <div class="background_image" [ngStyle]="{'background-image':'url(assets/images/gallery_2.jpg)'}"></div>
+        <a class="colorbox" href="assets/images/gallery_2.jpg"></a>
+      </div>
+
+      <div class="gallery_item col-md-3">
+        <div class="background_image" [ngStyle]="{'background-image':'url(assets/images/gallery_3.jpg)'}"></div>
+        <a class="colorbox" href="assets/images/gallery_3.jpg"></a>
+      </div>
+
+      <div class="gallery_item col-md-3">
+        <div class="background_image" [ngStyle]="{'background-image':'url(assets/images/gallery_4.jpg)'}"></div>
+        <a class="colorbox" href="assets/images/gallery_4.jpg"></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="booking mt-3">
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <div class="booking_title text-center"><h2>Book a room</h2></div>
+        <div class="booking_text text-center">
+          <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Suspendisse nec faucibus velit. Quisque eleifend orci ipsum, a bibendum lacus suscipit sit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Suspendisse nec faucibus velit. Quisque eleifend orci ipsum, a bibendum lacus suscipit sit.</p>
+        </div>
+
+        <div class="booking_slider_container">
+          <div class="booking_slider row g-0" *ngIf="hotels">
+            <div class="booking_item col-md-4" *ngFor="let hotel of hotels">
+              <a [routerLink]="['/rooms']" [queryParams]="{hotel_id: hotel.id}">
+                <div class="background_image" [ngStyle]="{'background-image':'url(assets/images/booking_1.jpg)'}"></div>
+                <div class="booking_overlay trans_200">
+                  <div class="text-light text-center fw-semibold fs-5" [ngStyle]="{'top':'80%'}">{{hotel.city}},{{hotel.address}}</div>
+                </div>
+                <div class="booking_price">{{hotel.name}}</div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<router-outlet>
+</router-outlet>

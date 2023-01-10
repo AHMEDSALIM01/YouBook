@@ -28,6 +28,7 @@ public class Room implements Serializable {
     private int numberOfBeds;
     @NotNull
     private Double price;
+    private String description;
     @ManyToOne
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;

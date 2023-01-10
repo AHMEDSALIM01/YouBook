@@ -1,0 +1,38 @@
+<div class="booking" [ngStyle]="{'background':reservationForm ? 'rgba(0,0,0,0.7)':'','min-height':reservationForm ? '100vh':''}">
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <div class="booking_title text-center"><h2>Book a room</h2></div>
+        <div class="booking_text text-center">
+          <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Suspendisse nec faucibus velit. Quisque eleifend orci ipsum, a bibendum lacus suscipit sit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Suspendisse nec faucibus velit. Quisque eleifend orci ipsum, a bibendum lacus suscipit sit.</p>
+        </div>
+        <div class="booking_slider_container">
+          <div class="owl-carousel owl-theme booking_slider row"*ngIf="rooms">
+            <div class="booking_item col-md-3 m-2" *ngFor="let room of rooms">
+              <div class="background_image" [ngStyle]="{'background-image':'url(assets/images/booking_1.jpg)'}"></div>
+              <div class="booking_overlay trans_100">
+                <div class="text-light text-center fw-semibold fs-6" [ngStyle]="{'top':'40%','max-height':'120px','overflow':'hidden','text-overflow':'ellipsis','white-space': 'wrap'}">{{room.description}}</div>
+              </div>
+              <div class="booking_price">{{room.price}} DH/nuit</div>
+              <div class="booking_link" (click)="reserver(room.id,room.price)" [ngStyle]="{'cursor':'pointer'}"><a>Reserver maintenant</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="booking_form_container" *ngIf="reservationForm">
+      <div class="form_bg align-content-center">
+        <form (submit)="confirmer()">
+          <div class="d-flex  flex-column align-items-center justify-content-center">
+            <div class="booking_input_container d-flex flex-column align-items-center justify-content-center">
+              <input type="date" class="datepicker booking_input booking_input_a booking_in" [(ngModel)]="reservation.startDate" name ="startDate" placeholder="Date de début">
+              <input type="date" class="datepicker booking_input booking_input_a booking_out" [(ngModel)]="reservation.endDate" name ="endDate" placeholder="Date de fin">
+              <input type="hidden" class="booking_input booking_input_a"  [value]="idRoom" name="roomId">
+            </div>
+            <div class="d-flex gap-2"><input type="submit" class="booking_button trans_200" value="Rechercher"><button (click)="Annuler()" class="booking_button trans_100">Annuler</button></div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

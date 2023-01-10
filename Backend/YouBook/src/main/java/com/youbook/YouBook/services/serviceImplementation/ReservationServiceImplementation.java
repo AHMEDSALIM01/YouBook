@@ -10,7 +10,6 @@ import com.youbook.YouBook.services.ReservationService;
 import com.youbook.YouBook.services.RoomService;
 import com.youbook.YouBook.services.UserService;
 import com.youbook.YouBook.validation.ReservationValidator;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.temporal.ChronoUnit;
