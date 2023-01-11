@@ -9,6 +9,7 @@ import { RoomsComponent } from './components/client/rooms/rooms.component';
 import {FormsModule} from "@angular/forms";
 import { HomeComponent } from './components/home/home.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
+import { AuthenticationComponent } from './components/authentication/authentication.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { NavBarComponent } from './components/nav-bar/nav-bar.component';
     RoomsComponent,
     HomeComponent,
     NavBarComponent,
+    AuthenticationComponent,
   ],
   imports: [
     BrowserModule,

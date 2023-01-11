@@ -50,8 +50,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
         Map<String,String> idToken = new HashMap<>();
-        idToken.put("access-token",jwtAccessToken);
-        idToken.put("refresh-token",jwtRefreshToken);
+        idToken.put("accessToken",jwtAccessToken);
+        idToken.put("refreshToken",jwtRefreshToken);
         response.setContentType("application/json");
         new ObjectMapper().writeValue(response.getOutputStream(),idToken);
     }

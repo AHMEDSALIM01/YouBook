@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin("**")
 @RequestMapping("/user")
 public class UserController {
     private UserService userService;
@@ -31,7 +30,7 @@ public class UserController {
         return ResponseEntity.ok(usersList);
     }
     @PostMapping("/addUser")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity saveUser(@Validated @RequestBody UserDto user){
         Users user1 = userService.addUser(user);
         if(user1 == null){

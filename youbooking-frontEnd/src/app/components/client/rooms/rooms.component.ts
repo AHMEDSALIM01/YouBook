@@ -24,6 +24,7 @@ export class RoomsComponent implements OnInit {
   public user!:Users;
   public errorMessage:String='';
   public successMessage:String='';
+  public now!:String;
   constructor(private hotelService:HotelService,private route:ActivatedRoute,private reservationService:ReservationService) {
     // @ts-ignore
     this.idHotel = +this.route.snapshot.queryParamMap.get('hotel_id');
@@ -33,8 +34,9 @@ export class RoomsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     this.getAllRooms();
+    this.minDate();
+    console.log(this.now);
   }
 
   public getAllRooms(){
@@ -91,5 +93,20 @@ export class RoomsComponent implements OnInit {
           );
       }
     }
+  }
+  minDate(){
+    var today = new Date();
+    var dd = today.getDate().toString();
+    var mm = (today.getMonth()+1).toString(); //January is 0!
+    var yyyy = today.getFullYear().toString();
+    if(Number(dd)<10){
+      dd='0'+dd;
+    }
+    if(Number(mm)<10){
+      mm='0'+mm
+    }
+
+    let todayUpdated = yyyy+'-'+mm+'-'+dd;
+    this.now=todayUpdated;
   }
 }

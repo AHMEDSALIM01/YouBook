@@ -58,10 +58,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeHttpRequests().antMatchers("/hotel/**").permitAll();
         http.authorizeHttpRequests().antMatchers("/refreshToken/**").permitAll();
-        http.authorizeHttpRequests().anyRequest().permitAll();
-        http.addFilter(corsFilter());
+        http.authorizeHttpRequests().antMatchers("/login").permitAll();
         http.addFilter(new JwtAuthenticationFilter(authenticationManagerBean()));
         http.addFilterBefore(new JwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilter(corsFilter());
     }
 
     @Bean
