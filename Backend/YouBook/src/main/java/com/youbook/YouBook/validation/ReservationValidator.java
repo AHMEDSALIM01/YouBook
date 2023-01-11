@@ -15,7 +15,6 @@ public class ReservationValidator {
     private HotelService hotelService;
     private RoomService roomService;
     private String errorMessage;
-
     public ReservationValidator(HotelService hotelService, RoomService roomService) {
         this.hotelService = hotelService;
         this.roomService = roomService;
@@ -33,6 +32,9 @@ public class ReservationValidator {
         if(reservation.getTotalPrice() == null){
             errorMessage="le prix total ne doit pas être vide";
         }
+        if(reservation.getTotalPrice() <=0){
+            errorMessage="le prix total est invalid";
+        }
          if(reservation.getRoom() == null || reservation.getRoom().getId() == null) {
             errorMessage="La chambre est invalide";
             return false;
@@ -41,7 +43,12 @@ public class ReservationValidator {
             Hotel hotel = hotelService.getById(room.getHotel().getId());
 
             int numberOfDays = (int) ChronoUnit.DAYS.between(reservation.getStartDate(), reservation.getEndDate());
-            Double totalPrice =Double.valueOf(Math.round(room.getPrice()*numberOfDays*100)/100d);
+            Double totalPrice;
+            if(numberOfDays == 0){
+                totalPrice=room.getPrice();
+            }else {
+                totalPrice =Double.valueOf(Math.round(room.getPrice()*numberOfDays*100)/100d);
+            }
             if(!totalPrice.equals(reservation.getTotalPrice())){
                 errorMessage ="le Prix total invalide";
                 return false;

@@ -42,10 +42,10 @@ public class Users implements Serializable {
     private Set<Role> roles=new HashSet<>();
     @JsonIgnore
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    private Set<Reservation> reservations;
+    private List<Reservation> reservations;
     @OneToMany (mappedBy = "owner",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JsonIgnore
-    private Set<Hotel> hotels;
+    private List<Hotel> hotels;
 
     @Override
     public String toString() {

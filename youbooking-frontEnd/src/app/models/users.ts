@@ -3,7 +3,7 @@ import {Reservation} from "./reservation";
 import {Hotel} from "./hotel";
 
 export class Users {
-  id!:BigInt;
+  id!:number;
   name!:String;
   address!:String;
   phoneNumber!:String;

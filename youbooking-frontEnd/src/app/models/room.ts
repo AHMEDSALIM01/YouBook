@@ -2,7 +2,7 @@ import {Reservation} from "./reservation";
 import {Hotel} from "./hotel";
 
 export class Room {
-  id!:BigInt;
+  id!:number;
   number!:number;
   numberOfBeds!:number;
   price!:number;
