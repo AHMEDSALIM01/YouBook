@@ -1,5 +1,6 @@
 <div class="booking" [ngStyle]="{'background':reservationForm ? 'rgba(0,0,0,0.7)':'','min-height':reservationForm ? '100vh':''}">
   <div class="container">
+    <div class="alert alert-success w-100 text-center fs-4 fw-semibold" *ngIf="successMessage.length>0">{{successMessage}}</div>
     <div class="row">
       <div class="col">
         <div class="booking_title text-center"><h2>Book a room</h2></div>
@@ -24,10 +25,11 @@
       <div class="form_bg align-content-center">
         <form (submit)="confirmer()">
           <div class="d-flex  flex-column align-items-center justify-content-center">
+            <span class="alert alert-danger" *ngIf="errorMessage.length>0">{{errorMessage}}</span>
             <div class="booking_input_container d-flex flex-column align-items-center justify-content-center">
               <input type="date" class="datepicker booking_input booking_input_a booking_in" [(ngModel)]="reservation.startDate" name ="startDate" placeholder="Date de début">
               <input type="date" class="datepicker booking_input booking_input_a booking_out" [(ngModel)]="reservation.endDate" name ="endDate" placeholder="Date de fin">
-              <input type="hidden" class="booking_input booking_input_a"  [value]="idRoom" name="roomId">
+              <input type="hidden" class="booking_input booking_input_a" [(ngModel)]="reservation.room.id" [value]="idRoom" name="roomId">
             </div>
             <div class="d-flex gap-2"><input type="submit" class="booking_button trans_200" value="Rechercher"><button (click)="Annuler()" class="booking_button trans_100">Annuler</button></div>
           </div>

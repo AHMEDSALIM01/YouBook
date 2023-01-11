@@ -20,11 +20,16 @@ public class ReservationController {
     }
     @PostMapping("/addReservation")
     public ResponseEntity saveReservation(@Validated @RequestBody Reservation reservation){
-        Reservation reservationResponse = reservationService.addReservation(reservation);
-        if(reservationResponse!=null){
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(reservationResponse);
-        }else{
-            return ResponseEntity.badRequest().body("donnés invalides");
+        try{
+            Reservation reservationResponse = reservationService.addReservation(reservation);
+            if(reservationResponse!=null){
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(reservationResponse);
+            }else{
+                return ResponseEntity.badRequest().body("donnés invalides");
+            }
+        }catch (IllegalStateException e){
+            String message = e.getMessage();
+            return ResponseEntity.status(401).body(message);
         }
     }
     @PutMapping("/cancelReservation")

@@ -34,74 +34,75 @@ public class ReservationServiceImplementation implements ReservationService {
 
     @Override
     public Reservation addReservation(Reservation reservation) {
+        try {
+            if (!reservationValidator.validate(reservation)){
+                throw new IllegalStateException(reservationValidator.getErrorMessage());
+            }
+            Users user = userService.getUserById(reservation.getUser().getId());
+            Reservation reservationToCheck = reservationRepository.getReservationByRef(reservation.getRef());
+            if (reservationToCheck != null) {
+                throw new IllegalStateException("Réservation existe déjà");
+            }
+            Boolean isHotelAvailable = hotelService.isHotelAvailable(reservation);
+            if(!isHotelAvailable){
+                throw new IllegalStateException("L'hotel n'est pas disponible pour la période donnée");
+            }
 
-        if (!reservationValidator.validate(reservation)) {
-            throw new IllegalStateException(reservationValidator.getErrorMessage());
+            Boolean isRoomAvailable = roomService.isRoomAvailable(reservation);
+            if (!isRoomAvailable) {
+                throw new IllegalStateException("La chambre n'est pas disponible pour la période donnée");
+            }
+            reservation.setStatus(StatusReservation.En_cours);
+            Reservation savedReservation = reservationRepository.save(reservation);
+            Room room = roomService.getRoomById(savedReservation.getRoom().getId());
+            room.getReservations().add(savedReservation);
+            user.getReservations().add(savedReservation);
+            userService.updateUser(user.getId(),user);
+            roomService.updateRoom(room);
+            return savedReservation;
         }
-
-        Users user = userService.getUserById(reservation.getUser().getId());
-        if (user == null) {
-            throw new IllegalStateException("utilisateur est invalide");
+        catch (IllegalStateException e){
+            throw new IllegalStateException(e.getMessage());
         }
-
-        Reservation reservationToCheck = reservationRepository.getReservationByRef(reservation.getRef());
-        if (reservationToCheck != null) {
-            throw new IllegalStateException("Réservation existe déjà");
-        }
-        Boolean isHotelAvailable = hotelService.isHotelAvailable(reservation);
-        if(!isHotelAvailable){
-            throw new IllegalStateException("L'hotel n'est pas disponible pour la période donnée");
-        }
-
-        Boolean isRoomAvailable = roomService.isRoomAvailable(reservation);
-        if (!isRoomAvailable) {
-            throw new IllegalStateException("La chambre n'est pas disponible pour la période donnée");
-        }
-        int numberOfDays = (int) ChronoUnit.DAYS.between(reservation.getStartDate(), reservation.getEndDate());
-        Double totalPrice =Double.valueOf(Math.round(reservation.getRoom().getPrice()*numberOfDays*100)/100d);
-        reservation.setStatus(StatusReservation.En_cours);
-        reservation.setTotalPrice(totalPrice);
-        Reservation savedReservation = reservationRepository.save(reservation);
-        Room room = roomService.getRoomById(savedReservation.getRoom().getId());
-        room.getReservations().add(savedReservation);
-        user.getReservations().add(savedReservation);
-        userService.updateUser(user.getId(),user);
-        roomService.updateRoom(room);
-        return savedReservation;
     }
 
     @Override
     public Reservation updateReservation(String ref, Reservation reservation) {
-        if (!reservationValidator.validate(reservation)) {
-            throw new IllegalStateException(reservationValidator.getErrorMessage());
+        try{
+            if (!reservationValidator.validate(reservation)) {
+                throw new IllegalStateException(reservationValidator.getErrorMessage());
+            }
+            Users user = userService.getUserById(reservation.getUser().getId());
+            if (user == null) {
+                throw new IllegalStateException("utilisateur est invalide");
+            }
+            Reservation reservationToCheck = reservationRepository.getReservationByRef(ref);
+            if (reservationToCheck == null) {
+                throw new IllegalStateException("Réservation non trouvée");
+            }
+            if(reservationToCheck.getStatus() == StatusReservation.valueOf("Confirmée")){
+                throw new IllegalStateException("vous n'avez pas le droit de modifier cette resérvation car elle est déjâ confirmée");
+            }
+            Boolean isHotelAvailable = hotelService.isHotelAvailable(reservation);
+            if(!isHotelAvailable){
+                throw new IllegalStateException("L'hotel n'est pas disponible pour la période donnée");
+            }
+            Boolean isRoomAvailable = roomService.isRoomAvailable(reservation);
+            if (!isRoomAvailable) {
+                throw new IllegalStateException("La chambre n'est pas disponible pour la période donnée");
+            }
+            int numberOfDays = (int) ChronoUnit.DAYS.between(reservation.getStartDate(), reservation.getEndDate());
+            Double totalPrice =Double.valueOf(Math.round(reservation.getRoom().getPrice()*numberOfDays*100)/100d);
+            reservationToCheck.setTotalPrice(totalPrice);
+            reservationToCheck.setStartDate(reservation.getStartDate());
+            reservationToCheck.setEndDate(reservation.getEndDate());
+            reservationToCheck.setRoom(reservation.getRoom());
+            Reservation savedReservation = reservationRepository.save(reservationToCheck);
+            return savedReservation;
+        }catch (IllegalStateException e){
+            throw new IllegalStateException(e.getMessage());
         }
-        Users user = userService.getUserById(reservation.getUser().getId());
-        if (user == null) {
-            throw new IllegalStateException("utilisateur est invalide");
-        }
-        Reservation reservationToCheck = reservationRepository.getReservationByRef(ref);
-        if (reservationToCheck == null) {
-            throw new IllegalStateException("Réservation non trouvée");
-        }
-        if(reservationToCheck.getStatus() == StatusReservation.valueOf("Confirmée")){
-            throw new IllegalStateException("vous n'avez pas le droit de modifier cette resérvation car elle est déjâ confirmée");
-        }
-        Boolean isHotelAvailable = hotelService.isHotelAvailable(reservation);
-        if(!isHotelAvailable){
-            throw new IllegalStateException("L'hotel n'est pas disponible pour la période donnée");
-        }
-        Boolean isRoomAvailable = roomService.isRoomAvailable(reservation);
-        if (!isRoomAvailable) {
-            throw new IllegalStateException("La chambre n'est pas disponible pour la période donnée");
-        }
-        int numberOfDays = (int) ChronoUnit.DAYS.between(reservation.getStartDate(), reservation.getEndDate());
-        Double totalPrice =Double.valueOf(Math.round(reservation.getRoom().getPrice()*numberOfDays*100)/100d);
-        reservationToCheck.setTotalPrice(totalPrice);
-        reservationToCheck.setStartDate(reservation.getStartDate());
-        reservationToCheck.setEndDate(reservation.getEndDate());
-        reservationToCheck.setRoom(reservation.getRoom());
-        Reservation savedReservation = reservationRepository.save(reservationToCheck);
-        return savedReservation;
+
     }
 
     @Override
