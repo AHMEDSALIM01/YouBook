@@ -150,6 +150,7 @@ public class HotelServiceImplementation implements HotelService {
             @Override
             public Predicate toPredicate(Root<Hotel> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> predicates = new ArrayList<>();
+                predicates.add(cb.equal(root.get("status"),StatusHotel.Accépté));
                 if(criteria.getCity()!=null){
                     predicates.add(cb.like(root.get("city"),"%" +criteria.getCity() + "%"));
                 }

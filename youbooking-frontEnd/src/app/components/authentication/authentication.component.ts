@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {Users} from "../../models/users";
-import {AuthServiceService} from "../../services/auth-service.service";
+import {AuthService} from "../../services/auth.service";
 import {HttpErrorResponse} from "@angular/common/http";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-authentication',
@@ -14,11 +15,14 @@ export class AuthenticationComponent implements OnInit {
   public user:Users
   private patternPassword:RegExp= new RegExp("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$");
   private patternEmail:RegExp=new RegExp("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
-  constructor(private authService:AuthServiceService) {
+  constructor(private authService:AuthService, private router:Router) {
     this.user=new Users();
   }
 
   ngOnInit(): void {
+    if(this.authService.isLogedIn()){
+      this.router.navigate(['/']);
+    }
   }
 
   onSubmit(){
@@ -28,27 +32,25 @@ export class AuthenticationComponent implements OnInit {
     }if(!this.patternPassword.test(this.user.password.toString()) || !this.patternEmail.test(this.user.email.toString())){
       this.errorMessage= !this.patternEmail.test(this.user.email.toString()) ? "L'adresse email est invalide (example@gmail.com)":
         (!this.patternPassword.test(this.user.password.toString()) ? "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre" : "");
-      console.log(this.patternEmail.test(this.user.email.toString()))
-      console.log(this.patternPassword.test(this.user.password.toString()))
     }
     else{
       this.authService.signIn(this.user).subscribe(
-        (response=>{
-          if(response instanceof HttpErrorResponse){
+        (response) => {
+          if (response instanceof HttpErrorResponse) {
             this.errorMessage = response.error
-          }
-          else{
-            localStorage.setItem("Authorization",response.accessToken.toString());
-            console.log(response.accessToken);
-            this.errorMessage="";
+          } else {
+            this.errorMessage = "";
             this.successMessage = "vous êtes connecté avec succès";
-            setTimeout(()=>{
-              this.successMessage ='';
-            },4000);
+            setTimeout(() => {
+              this.successMessage = '';
+              this.router.navigate(['/']);
+            }, 4000);
           }
-        })
-      )
+        },
+        (error) => {
+          this.errorMessage = error;
+        }
+      );
     }
-    console.log(this.user)
   }
 }

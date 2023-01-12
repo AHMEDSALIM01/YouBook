@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {AuthService} from "./services/auth.service";
 
 @Component({
   selector: 'app-root',
@@ -7,8 +8,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'youbooking-frontEnd';
-  constructor() { }
+  isLogedIn=false;
+  constructor(private authService:AuthService) { }
 
   ngOnInit(): void {
+    this.isLogedIn=this.authService.isLogedIn();
   }
 }

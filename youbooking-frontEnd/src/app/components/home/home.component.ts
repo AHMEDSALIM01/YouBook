@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {Hotel} from "../../models/hotel";
 import {FilterCriteria} from "../../models/filter-criteria";
 import {HotelService} from "../../services/hotel.service";
+import {catchError, finalize, of} from "rxjs";
 
 @Component({
   selector: 'app-home',
@@ -9,14 +10,21 @@ import {HotelService} from "../../services/hotel.service";
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  public hotels!:Hotel[];
+  public hotels:Hotel[]=[];
   public filterCriteria !: FilterCriteria;
+  currentPage = 0;
+  itemsPerPage = 10;
+  hasNext = true;
+  hasPrevious = false;
+  loading = false;
+  next="suivant";
+  previous = "précedent"
   constructor(private hotelService:HotelService ) {
     this.filterCriteria = new FilterCriteria();
   }
 
   ngOnInit(): void{
-    this.getAllHotels();
+    this.getHotels();
   }
 
   public getAllHotels(){
@@ -34,14 +42,36 @@ export class HomeComponent implements OnInit {
     }
     this.hotelService.filter(this.filterCriteria).subscribe(
       (data:Set<Hotel>)=>{
-        console.log(data)
         if(data.size==0){
           this.hotels=[];
         }
         this.hotels = Array.from(data);
       }
     );
-    console.log(this.filterCriteria)
   }
 
+  getHotels() {
+    this.loading = true;
+    this.hotelService.getAllHotels(this.currentPage)
+      .pipe(
+        catchError(error => {
+          this.loading = false;
+          console.error(error);
+          return of(null);
+        }),
+        finalize(() => this.loading = false)
+      )
+      .subscribe(pageData => {
+        if (pageData) {
+          this.hotels = pageData.content;
+          this.hasNext = pageData.totalElements > (this.currentPage * this.itemsPerPage);
+        }
+      });
+  }
+
+  paginate(pageNum: number) {
+    this.currentPage = pageNum;
+    this.hasPrevious = this.currentPage > 1;
+    this.getHotels();
+  }
 }
