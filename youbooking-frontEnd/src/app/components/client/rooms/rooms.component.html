@@ -27,11 +27,11 @@
           <div class="d-flex  flex-column align-items-center justify-content-center">
             <span class="alert alert-danger" *ngIf="errorMessage.length>0">{{errorMessage}}</span>
             <div class="booking_input_container d-flex flex-column align-items-center justify-content-center">
-              <input type="date" class="datepicker booking_input booking_input_a booking_in" [(ngModel)]="reservation.startDate" name ="startDate" placeholder="Date de début">
-              <input type="date" class="datepicker booking_input booking_input_a booking_out" [(ngModel)]="reservation.endDate" name ="endDate" placeholder="Date de fin">
+              <input type="text" [min]="now" class="datepicker booking_input booking_input_a booking_in" [(ngModel)]="reservation.startDate" name ="startDate" value="{{now}}" placeholder="Date de début">
+              <input type="text" [min]="now" class="datepicker booking_input booking_input_a booking_out" [(ngModel)]="reservation.endDate" name ="endDate" placeholder="Date de fin">
               <input type="hidden" class="booking_input booking_input_a" [(ngModel)]="reservation.room.id" [value]="idRoom" name="roomId">
             </div>
-            <div class="d-flex gap-2"><input type="submit" class="booking_button trans_200" value="Rechercher"><button (click)="Annuler()" class="booking_button trans_100">Annuler</button></div>
+            <div class="d-flex gap-2"><input type="submit" class="booking_button trans_200" value="Valider Réservation"><button (click)="Annuler()" class="booking_button trans_100">Annuler</button></div>
           </div>
         </form>
       </div>

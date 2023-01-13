@@ -106,7 +106,7 @@
         </div>
 
         <div class="booking_slider_container">
-          <div class="booking_slider row g-0" *ngIf="hotels">
+          <div class="booking_slider row g-0" *ngIf="hotels && !loading">
             <div class="booking_item col-md-4" *ngFor="let hotel of hotels">
               <a [routerLink]="['/rooms']" [queryParams]="{hotel_id: hotel.id}">
                 <div class="background_image" [ngStyle]="{'background-image':'url(assets/images/booking_1.jpg)'}"></div>
@@ -116,7 +116,20 @@
                 <div class="booking_price">{{hotel.name}}</div>
               </a>
             </div>
+            <pagination-controls class="text-center mt-4"
+              (pageChange)="paginate($event)"
+              [autoHide]="false"
+              [maxSize]="5"
+              (rotate)="false"
+              [nextLabel]="next"
+              [previousLabel]="previous"
+              firstText="<<"
+              lastText=">>"
+              nextText=">"
+              previousText="<">
+            </pagination-controls>
           </div>
+          <div *ngIf="loading">Loading...</div>
         </div>
       </div>
     </div>

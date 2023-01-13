@@ -1,0 +1,31 @@
+<div class="home">
+  <div class="home_slider_container">
+      <div class="owl-carousel owl-theme home_slider">
+        <div class="slide">
+          <div class="background_image" [ngStyle]="{'background-image':'url(assets/images/authentication.jpg)'}"></div>
+          <div class="home_container">
+            <div class="container">
+              <div class="row">
+                <div class="col">
+                  <div class="home_content text-center">
+                    <div class="contact_container d-flex flex-column justify-content-center align-items-center">
+                      <div class="alert alert-danger fs-6 fw-semibold" *ngIf="errorMessage.length>0" [ngStyle]="{}">{{errorMessage}}</div>
+                      <div class="alert alert-success fs-6 fw-semibold" *ngIf="successMessage.length>0" [ngStyle]="{}">{{successMessage}}</div>
+                      <div class="contact_form_container">
+                          <div class="home_title">Sign In</div>
+                          <form class="contact_form" id="contact_form" (submit)="onSubmit()">
+                            <div class="input_container"><input type="email" class="contact_input" [(ngModel)]="user.email" name="email" placeholder="Email"></div>
+                            <div class="input_container"><input type="password" class="contact_input" [(ngModel)]="user.password" name="password" placeholder="Password"></div>
+                            <input class="contact_button" type="submit" value="Sign-in">
+                          </form>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

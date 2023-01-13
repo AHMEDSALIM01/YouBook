@@ -2,12 +2,15 @@ package com.youbook.YouBook.security;
 
 import com.youbook.YouBook.entities.Role;
 import com.youbook.YouBook.entities.Users;
+import com.youbook.YouBook.handler.CustomAuthenticationFailureHandler;
 import com.youbook.YouBook.security.filters.JwtAuthenticationFilter;
 import com.youbook.YouBook.security.filters.JwtAuthorizationFilter;
 import com.youbook.YouBook.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -24,6 +27,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,6 +37,8 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserService userService;
+    @Autowired
+    CustomAuthenticationFailureHandler failureHandler;
     public SecurityConfig(UserService userService){
         this.userService = userService;
     }
@@ -41,13 +47,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(new UserDetailsService() {
             @Override
             public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                Users userByEmail= userService.loadUserByEmail(username);
-                Collection<GrantedAuthority> authorities = new ArrayList<>();
-                for(Role role:userByEmail.getRoles()){
-                    authorities.add(new SimpleGrantedAuthority(role.getName()));
+                try {
+                    Users userByEmail= userService.loadUserByEmail(username);
+                    Collection<GrantedAuthority> authorities = new ArrayList<>();
+                    for(Role role:userByEmail.getRoles()){
+                        authorities.add(new SimpleGrantedAuthority(role.getName()));
+                    }
+                    User user = new User(userByEmail.getEmail(), userByEmail.getPassword(),authorities);
+                    return user;
+                }catch (IllegalStateException e){
+                    throw new UsernameNotFoundException(e.getMessage());
                 }
-                User user = new User(userByEmail.getEmail(), userByEmail.getPassword(),authorities);
-                return user;
             }
         });
     }
@@ -58,10 +68,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeHttpRequests().antMatchers("/hotel/**").permitAll();
         http.authorizeHttpRequests().antMatchers("/refreshToken/**").permitAll();
-        http.authorizeHttpRequests().anyRequest().permitAll();
-        http.addFilter(corsFilter());
-        http.addFilter(new JwtAuthenticationFilter(authenticationManagerBean()));
+        http.authorizeHttpRequests().antMatchers("/login").permitAll();
+        http.addFilter(new JwtAuthenticationFilter(authenticationManagerBean(),failureHandler));
         http.addFilterBefore(new JwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilter(corsFilter());
     }
 
     @Bean

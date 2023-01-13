@@ -9,6 +9,10 @@ import { RoomsComponent } from './components/client/rooms/rooms.component';
 import {FormsModule} from "@angular/forms";
 import { HomeComponent } from './components/home/home.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
+import { AuthenticationComponent } from './components/authentication/authentication.component';
+import {NgxPaginationModule} from "ngx-pagination";
+import {JWT_OPTIONS, JwtHelperService, JwtModule} from "@auth0/angular-jwt";
+import {AuthService} from "./services/auth.service";
 
 @NgModule({
   declarations: [
@@ -17,14 +21,28 @@ import { NavBarComponent } from './components/nav-bar/nav-bar.component';
     RoomsComponent,
     HomeComponent,
     NavBarComponent,
+    AuthenticationComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    NgxPaginationModule,
+    JwtModule.forRoot({
+      jwtOptionsProvider: {
+        provide: JWT_OPTIONS,
+        useValue: {
+          tokenGetter: () => {
+            // return the access token from storage
+            return localStorage.getItem('access_token');
+          },
+          // other options you want to pass to the JWT module
+        }
+      }
+    })
   ],
-  providers: [],
+  providers: [AuthService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

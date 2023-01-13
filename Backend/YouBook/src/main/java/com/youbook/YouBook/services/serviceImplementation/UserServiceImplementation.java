@@ -149,7 +149,7 @@ public class UserServiceImplementation implements UserService {
         }
         Users userByEmail = userRepository.findByEmail(email);
         if (userByEmail == null) {
-            throw new IllegalStateException("l'adresse email ou password est invalid");
+            throw new IllegalStateException("l'adresse email invalid");
         }
         return userByEmail;
     }

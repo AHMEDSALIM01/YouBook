@@ -6,9 +6,13 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.youbook.YouBook.entities.Users;
+import com.youbook.YouBook.security.filters.JwtAuthenticationFilter;
 import com.youbook.YouBook.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,19 +52,22 @@ public class AuthenticationController {
         }
     }
 
+
+
     @GetMapping("/refreshToken")
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String authToken = request.getHeader("Authorization");
-        if(authToken !=null && authToken.startsWith("Bearer")){
+        System.out.println(authToken);
+        if(authToken !=null && authToken.startsWith("Bearer ")){
             try {
                 String refreshToken = authToken.substring(7);
-                Algorithm algorithm = Algorithm.HMAC256("monsecret926600");
+                Algorithm algorithm = Algorithm.HMAC256("monSecret926600");
                 JWTVerifier jwtVerifier = JWT.require(algorithm).build();
                 DecodedJWT decodedJWT = jwtVerifier.verify(refreshToken);
                 String email = decodedJWT.getSubject();
                 Users user = userService.loadUserByEmail(email);
                 String jwtAccessToken = JWT.create().withSubject(user.getEmail())
-                        .withExpiresAt(new Date(System.currentTimeMillis()+5*60*1000))
+                        .withExpiresAt(new Date(System.currentTimeMillis()+2*60*1000))
                         .withIssuer(request.getRequestURL().toString())
                         .withClaim("roles",user.getRoles().stream().map(r->r.getName()).collect(Collectors.toList()))
                         .sign(algorithm);
@@ -71,10 +78,11 @@ public class AuthenticationController {
                 new ObjectMapper().writeValue(response.getOutputStream(),idToken);
             }
             catch (Exception e){
-                throw e;
+                return ResponseEntity.badRequest().body(e.getMessage());
             }
         }else{
-            throw new RuntimeException("Refresh token est obligatoire!!");
+            return ResponseEntity.status(400).body("Refresh token est obligatoire!!");
         }
+        return null;
     }
 }
