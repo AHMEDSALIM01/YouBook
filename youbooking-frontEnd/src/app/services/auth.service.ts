@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpErrorResponse, HttpParams} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Users} from "../models/users";
 import {BehaviorSubject, catchError, Observable, of, tap, throwError} from "rxjs";
 import {IdToken} from "../models/id-token";
@@ -11,6 +11,7 @@ import {JwtHelperService} from "@auth0/angular-jwt";
 export class AuthService {
   isLoggedInSubject = new BehaviorSubject<boolean>(false);
   isLoggedIn = this.isLoggedInSubject.asObservable();
+  private refreshTokenInterval:any;
   constructor(private http:HttpClient,private route:Router,private jwtHelper:JwtHelperService) { }
 
   signIn(user:Users):Observable<IdToken|HttpErrorResponse>{
@@ -21,6 +22,7 @@ export class AuthService {
         localStorage.setItem("access_token", response.accessToken.toString());
         localStorage.setItem("refresh_token", response.refreshToken.toString());
         this.isLoggedInSubject.next(true);
+        this.startRefreshTokenInterval();
       }),
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
@@ -42,6 +44,44 @@ export class AuthService {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     this.isLoggedInSubject.next(false);
+    this.stopRefreshTokenInterval();
     this.route.navigate(['/login']);
   }
+
+  startRefreshTokenInterval(){
+    this.refreshTokenInterval = setInterval(() => {
+      this.refreshToken();
+    }, 600000);
+  }
+
+  stopRefreshTokenInterval(){
+    clearInterval(this.refreshTokenInterval);
+  }
+
+  refreshToken(){
+      const token = localStorage.getItem("access_token");
+      const refreshToken = localStorage.getItem("refresh_token");
+      console.log(token)
+      console.log(refreshToken);
+      if (this.jwtHelper.isTokenExpired(token)){
+        const headers = new HttpHeaders().set("Authorization","Bearer "+refreshToken)
+        console.log(headers)
+        this.http.get<IdToken>("http://localhost:8080/refreshToken",{headers}).subscribe(
+          response => {
+            localStorage.setItem("access_token", response.accessToken.toString());
+            localStorage.setItem("refresh_token", response.refreshToken.toString());
+            this.isLoggedInSubject.next(true);
+            window.location.reload();
+          },
+          error => {
+            if (error.status === 400) {
+              console.error("Error: ", error.error);
+            } else {
+              throw error;
+            }
+          }
+        );
+      }
+  }
+
 }

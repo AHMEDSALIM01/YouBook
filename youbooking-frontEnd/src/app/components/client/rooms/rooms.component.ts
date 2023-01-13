@@ -86,7 +86,7 @@ export class RoomsComponent implements OnInit {
                   setTimeout(()=>{
                     this.successMessage ='';
                     window.location.reload();
-                  },4000);
+                  },2500);
                 }
               },
               (error) => {

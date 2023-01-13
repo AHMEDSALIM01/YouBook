@@ -37,14 +37,15 @@ export class AuthenticationComponent implements OnInit {
       this.authService.signIn(this.user).subscribe(
         (response) => {
           if (response instanceof HttpErrorResponse) {
-            this.errorMessage = response.error
+            this.errorMessage = response.error.error;
+            console.log(this.errorMessage)
           } else {
             this.errorMessage = "";
             this.successMessage = "vous êtes connecté avec succès";
             setTimeout(() => {
               this.successMessage = '';
               this.router.navigate(['/']);
-            }, 4000);
+            }, 2500);
           }
         },
         (error) => {

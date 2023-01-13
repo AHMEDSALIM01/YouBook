@@ -9,9 +9,12 @@ import {AuthService} from "./services/auth.service";
 export class AppComponent {
   title = 'youbooking-frontEnd';
   isLogedIn=false;
-  constructor(private authService:AuthService) { }
+  constructor(private authService:AuthService) {
+
+  }
 
   ngOnInit(): void {
     this.isLogedIn=this.authService.isLogedIn();
+    console.log(this.authService.refreshToken());
   }
 }
