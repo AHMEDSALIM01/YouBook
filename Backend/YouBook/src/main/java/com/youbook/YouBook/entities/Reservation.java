@@ -1,6 +1,7 @@
 package com.youbook.YouBook.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.uuid.Generators;
 import com.youbook.YouBook.enums.StatusReservation;
@@ -20,7 +21,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,property = "id")
 public class Reservation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,9 +37,11 @@ public class Reservation implements Serializable {
     private StatusReservation status;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "room_id")
+    @JsonIgnoreProperties("reservations")
     private Room room;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties("reservations")
     private Users user;
     @PrePersist
     public void generateReference() {

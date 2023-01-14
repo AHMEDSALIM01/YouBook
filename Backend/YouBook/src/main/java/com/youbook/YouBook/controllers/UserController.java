@@ -39,7 +39,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(user1);
     }
     @PutMapping("/updateUser/{id}")
-    @PreAuthorize("hasAuthority('ADMIN') or #user.email == authentication.name")
+    //@PreAuthorize("hasAuthority('ADMIN') or #user.email == authentication.name")
     public ResponseEntity updateUser(@PathVariable Long id, @RequestBody Users user){
         Users userCheck = userService.getUserById(id);
         if(!userCheck.getEmail().equals(user.getEmail())){
@@ -63,13 +63,26 @@ public class UserController {
         }
     }
     @PutMapping("/updateRole")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity updateRoleUser(@RequestParam String email,@RequestParam String role){
         Users userResponse = userService.addRoleToUser(email,role);
         if(userResponse!=null){
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(userResponse);
         }else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Utilisateur n'est pas supprimé");
+        }
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity getUserById(@PathVariable Long id){
+        try{
+            Users userResponse = userService.getUserById(id);
+            if(userResponse!=null){
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(userResponse);
+            }else {
+                return ResponseEntity.status(401).body("Utilisateur n'est pas trouvée");
+            }
+        }catch (IllegalStateException e){
+            return ResponseEntity.status(401).body(e.getMessage());
         }
     }
 }

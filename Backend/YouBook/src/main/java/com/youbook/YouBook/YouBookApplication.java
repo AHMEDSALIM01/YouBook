@@ -31,4 +31,5 @@ public class YouBookApplication {
 		return new BCryptPasswordEncoder();
 	}
 
+
 }

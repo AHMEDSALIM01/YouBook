@@ -40,7 +40,6 @@ public class Users implements Serializable {
     private Boolean is_active;
     @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Set<Role> roles=new HashSet<>();
-    @JsonIgnore
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Reservation> reservations;
     @OneToMany (mappedBy = "owner",cascade = CascadeType.ALL,fetch = FetchType.LAZY)

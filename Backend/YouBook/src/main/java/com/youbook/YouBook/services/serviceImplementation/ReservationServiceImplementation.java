@@ -57,6 +57,7 @@ public class ReservationServiceImplementation implements ReservationService {
             Room room = roomService.getRoomById(savedReservation.getRoom().getId());
             room.getReservations().add(savedReservation);
             user.getReservations().add(savedReservation);
+            System.out.println(user);
             userService.updateUser(user.getId(),user);
             roomService.updateRoom(room);
             return savedReservation;
@@ -155,5 +156,11 @@ public class ReservationServiceImplementation implements ReservationService {
             throw new IllegalStateException("réservation non trouvés");
         }
         return reservation.get();
+    }
+
+    @Override
+    public List<Reservation> getReservationByUserId(Users users) {
+        System.out.println(this.reservationRepository.findByUser(users));
+        return reservationRepository.findByUser(users);
     }
 }

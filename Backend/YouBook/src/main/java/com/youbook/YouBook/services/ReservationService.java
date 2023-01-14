@@ -1,6 +1,7 @@
 package com.youbook.YouBook.services;
 
 import com.youbook.YouBook.entities.Reservation;
+import com.youbook.YouBook.entities.Users;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public interface ReservationService {
     List<Reservation> getAllReservations();
     Reservation getReservationByRef(String ref);
     Reservation getReservationById(Long id);
+    List<Reservation> getReservationByUserId(Users user);
 }

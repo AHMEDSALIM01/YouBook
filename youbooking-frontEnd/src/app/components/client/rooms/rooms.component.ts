@@ -35,17 +35,23 @@ export class RoomsComponent implements OnInit {
     this.reservation=new Reservation();
     this.reservation.room=new Room();
     this.reservation.user=new Users();
-    // @ts-ignore
-    this.token=localStorage.getItem("access_token").toString();
-    if(this.token!=null){
-      // @ts-ignore
-      this.jwt = this.jwtHelper.decodeToken(this.token);
-    }
   }
 
   ngOnInit(): void {
     this.getAllRooms();
     this.minDate();
+    if(localStorage!=null){
+      // @ts-ignore
+      if(localStorage.getItem("access_token").toString()!==null){
+        // @ts-ignore
+        this.token=localStorage.getItem("access_token").toString();
+      }
+    }
+
+    if(this.token!=null){
+      // @ts-ignore
+      this.jwt = this.jwtHelper.decodeToken(this.token);
+    }
   }
 
   public getAllRooms(){

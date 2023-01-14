@@ -70,9 +70,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeHttpRequests().antMatchers("/hotel/hotels").permitAll();
         http.authorizeHttpRequests().antMatchers("/hotel/{id}").permitAll();
+        http.authorizeHttpRequests().antMatchers("/hotel/deleteHotel").permitAll();
         http.authorizeHttpRequests().antMatchers("/refreshToken/**").permitAll();
         http.authorizeHttpRequests().antMatchers("/login").permitAll();
-        http.authorizeHttpRequests().antMatchers("/user/baneUser/**").permitAll();
+        http.authorizeHttpRequests().antMatchers("/signUpClient").permitAll();
+        http.authorizeHttpRequests().antMatchers("/signUpOwner").permitAll();
         http.authorizeHttpRequests().anyRequest().authenticated();
         http.addFilter(new JwtAuthenticationFilter(authenticationManagerBean(),failureHandler));
         http.addFilterBefore(new JwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);

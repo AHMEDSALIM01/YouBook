@@ -1,10 +1,7 @@
 package com.youbook.YouBook.services.serviceImplementation;
 
 import com.youbook.YouBook.criteria.FilterCriteria;
-import com.youbook.YouBook.entities.Hotel;
-import com.youbook.YouBook.entities.Reservation;
-import com.youbook.YouBook.entities.Room;
-import com.youbook.YouBook.entities.Users;
+import com.youbook.YouBook.entities.*;
 import com.youbook.YouBook.enums.StatusHotel;
 import com.youbook.YouBook.repositories.HotelRepository;
 import com.youbook.YouBook.services.HotelService;
@@ -16,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -24,6 +22,7 @@ import javax.persistence.criteria.*;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -112,11 +111,19 @@ public class HotelServiceImplementation implements HotelService {
             throw new IllegalStateException("l'hotel doit contenir un propritaire");
         }
         Users owner = userService.getUserById(hotel.getOwner().getId());
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String authentication = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<GrantedAuthority> hasRole = (List<GrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         if(owner == null){
             throw new IllegalStateException("le propritaire de ce Hotel n'existe pas");
         }
-        if(owner.getEmail() != authentication.getName()){
+        System.out.println(owner.getEmail().equals(authentication));
+        System.out.println(authentication);
+        for(GrantedAuthority role:hasRole){
+            if(role.getAuthority().equals("ADMIN")){
+                hotelRepository.deleteById(hotel.getId());
+            }
+        }
+        if(!owner.getEmail().equals(authentication)){
             throw new IllegalStateException("vous n'avez pas le droit de modifier ce Hotel");
         }
         hotelRepository.deleteById(hotel.getId());
