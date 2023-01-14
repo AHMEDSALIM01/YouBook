@@ -274,9 +274,9 @@ public class HotelServiceImplementation implements HotelService {
         if(owner == null){
             throw new IllegalStateException("le propritaire de ce Hotel n'existe pas");
         }
-        if(owner.getEmail() != authentication.getName()){
+        /*if(owner.getEmail() != authentication.getName()){
             throw new IllegalStateException("vous n'avez pas le droit de modifier ce Hotel");
-        }
+        }*/
         Room savedRoom = roomService.addRoom(existHotel,room);
         existHotel.getRooms().add(savedRoom);
         if(!existHotel.getRooms().isEmpty() && existHotel.getRooms().size() >= existHotel.getNumberOfRooms()){

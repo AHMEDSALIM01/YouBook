@@ -3,10 +3,7 @@
     <div class="alert alert-success w-100 text-center fs-4 fw-semibold" *ngIf="successMessage.length>0">{{successMessage}}</div>
     <div class="row">
       <div class="col">
-        <div class="booking_title text-center"><h2>Book a room</h2></div>
-        <div class="booking_text text-center">
-          <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Suspendisse nec faucibus velit. Quisque eleifend orci ipsum, a bibendum lacus suscipit sit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Suspendisse nec faucibus velit. Quisque eleifend orci ipsum, a bibendum lacus suscipit sit.</p>
-        </div>
+        <div class="booking_title text-center"><h2>Nos chambres</h2></div>
         <div class="booking_slider_container">
           <div class="owl-carousel owl-theme booking_slider row"*ngIf="rooms">
             <div class="booking_item col-md-3 m-2" *ngFor="let room of rooms">

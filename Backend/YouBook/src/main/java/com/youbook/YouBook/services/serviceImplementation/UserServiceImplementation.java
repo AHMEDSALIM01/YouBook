@@ -7,6 +7,7 @@ import com.youbook.YouBook.repositories.UserRepository;
 import com.youbook.YouBook.services.RoleService;
 import com.youbook.YouBook.services.UserService;
 import com.youbook.YouBook.validation.UserValidator;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ public class UserServiceImplementation implements UserService {
 
     private PasswordEncoder passwordEncoder;
     private RoleService roleService;
+
 
     public UserServiceImplementation(UserRepository userRepository, RoleService roleService, UserValidator userValidator, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;

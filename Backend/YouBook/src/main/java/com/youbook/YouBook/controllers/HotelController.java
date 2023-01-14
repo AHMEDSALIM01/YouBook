@@ -27,7 +27,7 @@ public class HotelController {
 
     @GetMapping("/hotels")
     public ResponseEntity<Page<Hotel>> getAllHotels(@RequestParam (defaultValue = "0") int page){
-        Page<Hotel> hotels = hotelService.getAllHotels(page, 10);
+        Page<Hotel> hotels = hotelService.getAllHotels(page, 7);
         System.out.println(hotels);
         return ResponseEntity.ok(hotels);
     }

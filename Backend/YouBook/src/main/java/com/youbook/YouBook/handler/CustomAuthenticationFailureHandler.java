@@ -2,7 +2,9 @@ package com.youbook.YouBook.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -18,9 +20,13 @@ import java.util.Map;
 public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException, JsonProcessingException {
+        String error = "adresse email ou mot de passe invalid";
+        if(exception instanceof AuthenticationServiceException){
+            error = exception.getMessage();
+        }
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
-        response.getWriter().append(new ObjectMapper().writeValueAsString(Map.of("error","adresse email ou mot de passe invalid")));
+        response.getWriter().append(new ObjectMapper().writeValueAsString(Map.of("error",error)));
     }
 }
 

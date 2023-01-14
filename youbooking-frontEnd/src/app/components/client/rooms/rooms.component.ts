@@ -9,6 +9,7 @@ import {ReservationService} from "../../../services/reservation.service";
 import {catchError, map, throwError} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
 import {AuthService} from "../../../services/auth.service";
+import {JwtHelperService} from "@auth0/angular-jwt";
 
 @Component({
   selector: 'app-rooms',
@@ -26,18 +27,25 @@ export class RoomsComponent implements OnInit {
   public errorMessage:String='';
   public successMessage:String='';
   public now!:String;
-  constructor(private hotelService:HotelService,private route:ActivatedRoute,private reservationService:ReservationService,private router:Router,private authService:AuthService) {
+  private jwt:any;
+  private token!:String;
+  constructor(private hotelService:HotelService,private route:ActivatedRoute,private reservationService:ReservationService,private router:Router,private authService:AuthService,private jwtHelper:JwtHelperService) {
     // @ts-ignore
     this.idHotel = +this.route.snapshot.queryParamMap.get('hotel_id');
     this.reservation=new Reservation();
     this.reservation.room=new Room();
     this.reservation.user=new Users();
+    // @ts-ignore
+    this.token=localStorage.getItem("access_token").toString();
+    if(this.token!=null){
+      // @ts-ignore
+      this.jwt = this.jwtHelper.decodeToken(this.token);
+    }
   }
 
   ngOnInit(): void {
     this.getAllRooms();
     this.minDate();
-    console.log(this.now);
   }
 
   public getAllRooms(){
@@ -56,8 +64,8 @@ export class RoomsComponent implements OnInit {
     window.location.reload();
   }
   confirmer(){
-    if (this.authService.isLogedIn()){
-      this.reservation.user.id=28;
+    if (this.authService.isLogedIn() && this.jwt.enabled){
+      this.reservation.user.id=this.jwt.user_id;
       this.reservation.room.id=this.idRoom;
       if(this.reservation.startDate==null ||this.reservation.endDate==null){
         this.errorMessage = this.reservation.startDate == null ? "la date de début ne doit pas être vide" :
@@ -74,7 +82,6 @@ export class RoomsComponent implements OnInit {
           }else {
             this.reservation.totalPrice=difference/86400000 * this.roomPrice;
           }
-          console.log(this.reservation.totalPrice)
           this.reservationService.addReservation(this.reservation)
             .subscribe(
               (response) => {
@@ -83,6 +90,7 @@ export class RoomsComponent implements OnInit {
                 }else{
                   this.reservationForm=false;
                   this.successMessage = "reservation ajouté avec succès";
+                  this.errorMessage="";
                   setTimeout(()=>{
                     this.successMessage ='';
                     window.location.reload();

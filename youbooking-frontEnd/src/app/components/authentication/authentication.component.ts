@@ -3,6 +3,7 @@ import {Users} from "../../models/users";
 import {AuthService} from "../../services/auth.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {Router} from "@angular/router";
+import {JwtHelperService, JwtModule} from "@auth0/angular-jwt";
 
 @Component({
   selector: 'app-authentication',
@@ -10,9 +11,10 @@ import {Router} from "@angular/router";
   styleUrls: ['./authentication.component.css']
 })
 export class AuthenticationComponent implements OnInit {
-  public errorMessage:String="";
-  public successMessage:String="";
-  public user:Users
+  errorMessage:String="";
+  successMessage:String="";
+  user:Users;
+  jwt!:any;
   private patternPassword:RegExp= new RegExp("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,}$");
   private patternEmail:RegExp=new RegExp("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
   constructor(private authService:AuthService, private router:Router) {
@@ -26,6 +28,7 @@ export class AuthenticationComponent implements OnInit {
   }
 
   onSubmit(){
+
     if(this.user.email==null || this.user.password == null){
       this.errorMessage = this.user.email==null ? "L'adresse email ne doit pas être vide":
         (this.user.password==null ? "le mot de passe ne doit pas être vide" : "");

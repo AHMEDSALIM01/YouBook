@@ -13,6 +13,7 @@ import { AuthenticationComponent } from './components/authentication/authenticat
 import {NgxPaginationModule} from "ngx-pagination";
 import {JWT_OPTIONS, JwtHelperService, JwtModule} from "@auth0/angular-jwt";
 import {AuthService} from "./services/auth.service";
+import { SignupComponent } from './components/signup/signup.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import {AuthService} from "./services/auth.service";
     RoomsComponent,
     HomeComponent,
     NavBarComponent,
-    AuthenticationComponent
+    AuthenticationComponent,
+    SignupComponent
   ],
   imports: [
     BrowserModule,
