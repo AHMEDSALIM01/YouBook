@@ -3,6 +3,7 @@ import {Hotel} from "../../models/hotel";
 import {FilterCriteria} from "../../models/filter-criteria";
 import {HotelService} from "../../services/hotel.service";
 import {catchError, finalize, of} from "rxjs";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-home',
@@ -19,8 +20,9 @@ export class HomeComponent implements OnInit {
   loading = false;
   next="suivant";
   previous = "précedent"
-  constructor(private hotelService:HotelService ) {
+  constructor(private hotelService:HotelService,private authService:AuthService) {
     this.filterCriteria = new FilterCriteria();
+    this.authService.startRefreshTokenInterval();
   }
 
   ngOnInit(): void{
@@ -70,8 +72,8 @@ export class HomeComponent implements OnInit {
   }
 
   paginate(pageNum: number) {
-    this.currentPage = pageNum;
-    this.hasPrevious = this.currentPage > 1;
+    this.currentPage = pageNum-1;
+    this.hasPrevious = this.currentPage > 0;
     this.getHotels();
   }
 }

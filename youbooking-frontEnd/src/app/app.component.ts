@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {AuthService} from "./services/auth.service";
+import {JwtHelperService} from "@auth0/angular-jwt";
 
 @Component({
   selector: 'app-root',
@@ -9,12 +10,14 @@ import {AuthService} from "./services/auth.service";
 export class AppComponent {
   title = 'youbooking-frontEnd';
   isLogedIn=false;
+  user_name!:String;
   constructor(private authService:AuthService) {
 
   }
 
   ngOnInit(): void {
     this.isLogedIn=this.authService.isLogedIn();
-    console.log(this.authService.refreshToken());
+    this.authService.startRefreshTokenInterval();
+    console.log(this.user_name);
   }
 }

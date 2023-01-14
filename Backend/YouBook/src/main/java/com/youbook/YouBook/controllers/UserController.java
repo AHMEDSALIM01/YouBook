@@ -53,7 +53,7 @@ public class UserController {
         }
     }
     @PutMapping("/baneUser/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity baneUser(@PathVariable Long id){
         Users userResponse = userService.bannUser(id);
         if(userResponse!=null){

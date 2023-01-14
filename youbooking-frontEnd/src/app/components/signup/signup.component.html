@@ -1,0 +1,52 @@
+<div class="home">
+  <div class="home_slider_container">
+    <div class="owl-carousel owl-theme home_slider">
+      <div class="slide">
+        <div class="background_image" [ngStyle]="{'background-image':'url(assets/images/authentication.jpg)'}"></div>
+        <div class="home_container">
+          <div class="container">
+            <div class="row">
+              <div class="col">
+                <div class="home_content text-center">
+                  <div class="signup_container d-flex flex-column justify-content-center align-items-center">
+                    <div class="alert alert-danger fs-6 fw-semibold" *ngIf="errorMessage.length>0" [ngStyle]="{}">{{errorMessage}}</div>
+                    <div class="alert alert-success fs-6 fw-semibold" *ngIf="successMessage.length>0">{{successMessage}}</div>
+                    <div class="signup_form_container">
+                      <div class="home_title">Créer Un Compte</div>
+                      <form class="signup_form" id="signup_form" (submit)="onSubmit()">
+                        <div class="input_container"><input type="text" class="signup_input" [(ngModel)]="user.name" name="name" placeholder="Nom complet"></div>
+                        <div class="input_container"><input type="email" class="signup_input" [(ngModel)]="user.email" name="email" placeholder="Email"></div>
+                        <div class="input_container"><input type="password" class="signup_input" [(ngModel)]="user.password" name="password" placeholder="Mot de pass"></div>
+                        <div class="input_container"><input type="password" class="signup_input" [(ngModel)]="confirmPasswor" name="confirm_password" placeholder="Confirmer mot de pass"></div>
+                        <div class="input_container"><input type="text" class="signup_input" [(ngModel)]="user.phoneNumber" name="phoneNumber" placeholder="Télephone"></div>
+                        <div class="input_container"><input type="text" class="signup_input text_area" [(ngModel)]="user.address" name="address" placeholder="Adresse"></div>
+                        <div class="input_container mt-2 d-flex justify-content-center align-items-center">
+                          <label class="signup_label">
+                            CLIENT
+                          </label>
+                          <input type="radio" class="contact_radio" [(ngModel)]="role" name="role" value="CLIENT" checked>
+                          <label class="signup_label">
+                            PROPRIETAIRE
+                          </label>
+                          <input type="radio" class="contact_radio" [(ngModel)]="role" name="role" value="OWNER">
+                        </div>
+                        <div class="input_container mt-2 d-flex justify-content-evenly">
+                          <label class="signup_label text-start" [ngStyle]="{'font-size':'15px'}">
+                            Vous avez déja un Compte:
+                          </label>
+                          <a class="signup_label" [routerLink]="['/login']" [ngStyle]="{'font-size':'15px','color':'#1a73e8'}">Se Connecter</a>
+                        </div>
+                        <input class="signup_button" type="submit" value="Valider">
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

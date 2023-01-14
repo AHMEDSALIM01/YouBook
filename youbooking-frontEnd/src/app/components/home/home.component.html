@@ -8,7 +8,7 @@
             <div class="row">
               <div class="col">
                 <div class="home_content text-center">
-                  <div class="home_title">A Luxury Stay</div>
+                  <div class="home_title">Trouver un hôtel</div>
                   <div class="booking_form_container">
                     <form (submit)="onSubmit()">
                       <div class="d-flex flex-xl-row flex-column align-items-start justify-content-start">
@@ -100,18 +100,18 @@
   <div class="container">
     <div class="row">
       <div class="col">
-        <div class="booking_title text-center"><h2>Book a room</h2></div>
+        <div class="booking_title text-center"><h2>Hotels de lux</h2></div>
         <div class="booking_text text-center">
-          <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Suspendisse nec faucibus velit. Quisque eleifend orci ipsum, a bibendum lacus suscipit sit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Suspendisse nec faucibus velit. Quisque eleifend orci ipsum, a bibendum lacus suscipit sit.</p>
+          <p>Comparez tous les meilleurs sites de voyage en une seule recherche pour trouver les meilleures offres d'hôtels sur Youbooking, le meilleur site de comparaison de prix d'hôtel au monde.</p>
         </div>
 
         <div class="booking_slider_container">
           <div class="booking_slider row g-0" *ngIf="hotels && !loading">
-            <div class="booking_item col-md-4" *ngFor="let hotel of hotels">
+            <div class="booking_item col-md-4 g-4" *ngFor="let hotel of hotels">
               <a [routerLink]="['/rooms']" [queryParams]="{hotel_id: hotel.id}">
                 <div class="background_image" [ngStyle]="{'background-image':'url(assets/images/booking_1.jpg)'}"></div>
                 <div class="booking_overlay trans_200">
-                  <div class="text-light text-center fw-semibold fs-5" [ngStyle]="{'top':'80%'}">{{hotel.city}},{{hotel.address}}</div>
+                  <div class="text-light text-center fw-semibold fs-5" [ngStyle]="{'top':'60%'}">{{hotel.city}},{{hotel.address}}</div>
                 </div>
                 <div class="booking_price">{{hotel.name}}</div>
               </a>

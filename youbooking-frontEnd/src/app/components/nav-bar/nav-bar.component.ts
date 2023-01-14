@@ -9,7 +9,9 @@ import {Subscription} from "rxjs";
 })
 export class NavBarComponent implements OnInit {
   isLoggedIn = false;
+  user_name ="";
   private isLoggedInSubscription!: Subscription;
+  private userName!: Subscription;
   constructor(private authService: AuthService) {
   }
 
@@ -19,11 +21,18 @@ export class NavBarComponent implements OnInit {
         this.isLoggedIn = isLoggedIn;
       }
     );
+    this.userName = this.authService.userLogged.subscribe(
+      (user) => {
+        this.user_name = user.toString();
+      }
+    );
   }
 
   logout() {
     this.authService.logout();
   }
+
+
 
 }
 

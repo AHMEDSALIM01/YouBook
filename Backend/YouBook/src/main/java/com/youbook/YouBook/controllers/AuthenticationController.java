@@ -35,21 +35,30 @@ public class AuthenticationController {
     }
     @PostMapping("/signUpClient")
     public ResponseEntity signUpClient(@Validated @RequestBody Users user){
-        Users user1 = userService.signUp("CLIENT",user);
-        if(user1 != null){
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(user1);
-        }else {
-            return ResponseEntity.badRequest().body("Donnés non valid");
+        try {
+            Users user1 = userService.signUp("CLIENT",user);
+            if(user1 != null){
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(user1);
+            }else {
+                return ResponseEntity.badRequest().body("Donnés non valid");
+            }
+        }catch (IllegalStateException e){
+            return ResponseEntity.status(401).body(e.getMessage());
         }
     }
     @PostMapping("/signUpOwner")
     public ResponseEntity signUpOwner(@Validated @RequestBody Users user){
-        Users user1 = userService.signUp("Owner",user);
-        if(user1 != null){
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(user1);
-        }else {
-            return ResponseEntity.badRequest().body("Donnés non valid");
+        try {
+            Users user1 = userService.signUp("Owner",user);
+            if(user1 != null){
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(user1);
+            }else {
+                return ResponseEntity.badRequest().body("Donnés non valid");
+            }
+        }catch (IllegalStateException e){
+            return ResponseEntity.status(401).body(e.getMessage());
         }
+
     }
 
 
@@ -68,8 +77,10 @@ public class AuthenticationController {
                 Users user = userService.loadUserByEmail(email);
                 String jwtAccessToken = JWT.create().withSubject(user.getEmail())
                         .withExpiresAt(new Date(System.currentTimeMillis()+2*60*1000))
-                        .withIssuer(request.getRequestURL().toString())
                         .withClaim("roles",user.getRoles().stream().map(r->r.getName()).collect(Collectors.toList()))
+                        .withClaim("user_id",user.getId())
+                        .withClaim("enabled",user.getIs_active())
+                        .withClaim("user_name",user.getName())
                         .sign(algorithm);
                 Map<String,String> idToken = new HashMap<>();
                 idToken.put("access-token",jwtAccessToken);

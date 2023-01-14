@@ -11,7 +11,11 @@ import {JwtHelperService} from "@auth0/angular-jwt";
 export class AuthService {
   isLoggedInSubject = new BehaviorSubject<boolean>(false);
   isLoggedIn = this.isLoggedInSubject.asObservable();
+  userNameSubject = new BehaviorSubject<String>("");
+  userLogged = this.userNameSubject.asObservable();
   private refreshTokenInterval:any;
+  role!:String;
+  endPoint!:String;
   constructor(private http:HttpClient,private route:Router,private jwtHelper:JwtHelperService) { }
 
   signIn(user:Users):Observable<IdToken|HttpErrorResponse>{
@@ -22,6 +26,10 @@ export class AuthService {
         localStorage.setItem("access_token", response.accessToken.toString());
         localStorage.setItem("refresh_token", response.refreshToken.toString());
         this.isLoggedInSubject.next(true);
+        const accessToken = localStorage.getItem("access_token");
+        // @ts-ignore
+        let jwt = this.jwtHelper.decodeToken(accessToken.toString());
+        this.userNameSubject.next(jwt.user_name);
         this.startRefreshTokenInterval();
       }),
       catchError((error: HttpErrorResponse) => {
@@ -34,16 +42,38 @@ export class AuthService {
       })
     );
   }
+
+  signUp(user:Users):Observable<Users | HttpErrorResponse>{
+    this.endPoint = this.role=="CLIENT" ? "signUpClient" : (this.role == "OWNER" ? "signUpOwner" : "");
+    return this.http.post<Users>("http://localhost:8080/"+this.endPoint,user).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          console.error("Error: ", error.error);
+          return of(error);
+        } else {
+          return throwError(error);
+        }
+      })
+    );
+  }
   isLogedIn(): boolean {
     const token = localStorage.getItem('access_token');
+    if(token!=null){
+      const user = this.jwtHelper.decodeToken(token).user_name
+      this.userNameSubject.next(user)
+    }
     const isLoggedIn = !this.jwtHelper.isTokenExpired(token);
     this.isLoggedInSubject.next(isLoggedIn);
+
     return isLoggedIn;
   }
+
+
   logout(){
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     this.isLoggedInSubject.next(false);
+    this.userNameSubject.next("")
     this.stopRefreshTokenInterval();
     this.route.navigate(['/login']);
   }
@@ -51,7 +81,7 @@ export class AuthService {
   startRefreshTokenInterval(){
     this.refreshTokenInterval = setInterval(() => {
       this.refreshToken();
-    }, 600000);
+    }, 100000);
   }
 
   stopRefreshTokenInterval(){
@@ -61,26 +91,28 @@ export class AuthService {
   refreshToken(){
       const token = localStorage.getItem("access_token");
       const refreshToken = localStorage.getItem("refresh_token");
-      console.log(token)
-      console.log(refreshToken);
-      if (this.jwtHelper.isTokenExpired(token)){
-        const headers = new HttpHeaders().set("Authorization","Bearer "+refreshToken)
-        console.log(headers)
-        this.http.get<IdToken>("http://localhost:8080/refreshToken",{headers}).subscribe(
-          response => {
-            localStorage.setItem("access_token", response.accessToken.toString());
-            localStorage.setItem("refresh_token", response.refreshToken.toString());
-            this.isLoggedInSubject.next(true);
-            window.location.reload();
-          },
-          error => {
-            if (error.status === 400) {
-              console.error("Error: ", error.error);
-            } else {
-              throw error;
+      if (token!=null && this.jwtHelper.isTokenExpired(token)){
+        if(!this.jwtHelper.isTokenExpired(refreshToken)) {
+          const headers = new HttpHeaders().set("Authorization", "Bearer " + refreshToken)
+          console.log(headers)
+          this.http.get<IdToken>("http://localhost:8080/refreshToken", {headers}).subscribe(
+            response => {
+              localStorage.setItem("access_token", response.accessToken.toString());
+              localStorage.setItem("refresh_token", response.refreshToken.toString());
+              this.isLoggedInSubject.next(true);
+              window.location.reload();
+            },
+            error => {
+              if (error.status === 400) {
+                console.error("Error: ", error.error);
+              } else {
+                throw error;
+              }
             }
-          }
-        );
+          );
+        }else{
+          this.logout();
+        }
       }
   }
 

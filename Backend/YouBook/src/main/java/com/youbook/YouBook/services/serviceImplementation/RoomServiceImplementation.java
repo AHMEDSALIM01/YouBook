@@ -71,7 +71,7 @@ public class RoomServiceImplementation implements RoomService {
         if(room !=null){
             for (Reservation r : room.getReservations()) {
                 if ((r!=null && (r.getStatus() == StatusReservation.En_cours || r.getStatus() == StatusReservation.Confirmée) &&
-                        (r.getStartDate().isBefore(endDate) && r.getEndDate().isAfter(startDate))) || r.getUser().getId()!=reservation.getUser().getId()) {
+                        (r.getStartDate().isBefore(endDate) && r.getEndDate().isAfter(startDate)))) {
                     return false;
                 }
             }
