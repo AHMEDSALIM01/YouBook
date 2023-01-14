@@ -66,7 +66,6 @@ public class AuthenticationController {
     @GetMapping("/refreshToken")
     public ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String authToken = request.getHeader("Authorization");
-        System.out.println(authToken);
         if(authToken !=null && authToken.startsWith("Bearer ")){
             try {
                 String refreshToken = authToken.substring(7);

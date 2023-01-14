@@ -103,13 +103,19 @@ public class UserServiceImplementation implements UserService {
         }
         userExist.setAddress(user.getAddress());
         userExist.setPhoneNumber(user.getPhoneNumber());
-        userExist.setPassword(passwordEncoder.encode(user.getPassword()));
+        System.out.println(userExist.getReservations());
+        System.out.println(user.getReservations());
+        System.out.println(user.getPassword().equals(userExist.getPassword()));
+        if(!user.getPassword().equals(userExist.getPassword())){
+            userExist.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         return userRepository.save(userExist);
     }
 
     @Override
     public Users bannUser(Long id) {
         Users userExist = this.getUserById(id);
+
         if (userExist == null) {
             throw new IllegalStateException("utilisateur non trouvé");
         }

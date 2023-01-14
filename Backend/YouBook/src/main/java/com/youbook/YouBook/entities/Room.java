@@ -1,6 +1,7 @@
 package com.youbook.YouBook.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,5 +34,17 @@ public class Room implements Serializable {
     @JoinColumn(name = "hotel_id")
     private Hotel hotel;
     @OneToMany(mappedBy = "room",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"room","user"})
     private List<Reservation> reservations;
+
+    @Override
+    public String toString() {
+        return "Room{" +
+                "id=" + id +
+                ", number=" + number +
+                ", numberOfBeds=" + numberOfBeds +
+                ", price=" + price +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

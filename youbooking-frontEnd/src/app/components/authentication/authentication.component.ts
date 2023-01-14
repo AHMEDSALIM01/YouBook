@@ -28,7 +28,7 @@ export class AuthenticationComponent implements OnInit {
   }
 
   onSubmit(){
-
+  console.log(this.user)
     if(this.user.email==null || this.user.password == null){
       this.errorMessage = this.user.email==null ? "L'adresse email ne doit pas être vide":
         (this.user.password==null ? "le mot de passe ne doit pas être vide" : "");

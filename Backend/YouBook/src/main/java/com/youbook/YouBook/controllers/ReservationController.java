@@ -1,6 +1,7 @@
 package com.youbook.YouBook.controllers;
 
 import com.youbook.YouBook.entities.Reservation;
+import com.youbook.YouBook.entities.Users;
 import com.youbook.YouBook.services.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -77,10 +78,21 @@ public class ReservationController {
             return ResponseEntity.badRequest().body("la resérvation n'est pas trouvée");
         }
     }
+
+    @PostMapping("/reservations")
+    public ResponseEntity getAllByUserId(@RequestBody Users user){
+        try {
+            List<Reservation> reservationResponse = reservationService.getReservationByUserId(user);
+            System.out.println(reservationResponse);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(reservationResponse);
+        }catch (IllegalStateException e){
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
+    }
+
     @GetMapping("/")
     public ResponseEntity getAllReservations(){
         List<Reservation> reservationResponse = reservationService.getAllReservations();
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(reservationResponse);
     }
-
 }

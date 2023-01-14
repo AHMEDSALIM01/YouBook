@@ -7,6 +7,7 @@ import com.youbook.YouBook.services.HotelService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -97,6 +98,22 @@ public class HotelController {
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(hotel);
         }else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Hotel N° "+id+"n'existe pas");
+        }
+    }
+
+    @DeleteMapping("/deleteHotel")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('OWNER')")
+    public ResponseEntity deletHotel(@RequestBody Hotel hotel){
+        Hotel hotelresponse = hotelService.delete(hotel);
+        try {
+            if(hotel!=null){
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(hotelresponse);
+            }else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Hotel n'est pas supprimer");
+            }
+
+        }catch (IllegalStateException e){
+            return ResponseEntity.status(401).body(e.getMessage());
         }
     }
 

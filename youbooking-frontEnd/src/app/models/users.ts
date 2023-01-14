@@ -11,6 +11,6 @@ export class Users {
   password!:String;
   is_active!:Boolean;
   roles!:Set<Role>;
-  reservations!:Reservation;
+  reservations!:Reservation[];
   hotels!:Set<Hotel>;
 }

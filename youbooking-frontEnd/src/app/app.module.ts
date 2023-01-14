@@ -14,6 +14,7 @@ import {NgxPaginationModule} from "ngx-pagination";
 import {JWT_OPTIONS, JwtHelperService, JwtModule} from "@auth0/angular-jwt";
 import {AuthService} from "./services/auth.service";
 import { SignupComponent } from './components/signup/signup.component';
+import { ListreservationComponent } from './components/client/listreservation/listreservation.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { SignupComponent } from './components/signup/signup.component';
     HomeComponent,
     NavBarComponent,
     AuthenticationComponent,
-    SignupComponent
+    SignupComponent,
+    ListreservationComponent
   ],
   imports: [
     BrowserModule,

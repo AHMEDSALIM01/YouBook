@@ -1,0 +1,46 @@
+.booking
+{
+  background: #ffffff;
+  padding-top: 107px;
+  padding-bottom: 114px;
+}
+.booking_text
+{
+  margin-top: 28px;
+}
+.booking_slider_container
+{
+  margin-top: 63px;
+}
+.booking_link
+{
+  position: absolute;
+  bottom: 18px;
+  left: 15px;
+  width: calc(100% - 30px);
+  height: 65px;
+  background: #ffa37b;
+  text-align: center;
+}
+.booking_link a
+{
+  display: block;
+  width: 100%;
+  height: 100%;
+  line-height: 65px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}
+.booking_overlay
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(13,9,30,0.67);
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+}
