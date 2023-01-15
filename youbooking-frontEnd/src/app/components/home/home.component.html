@@ -108,7 +108,7 @@
         <div class="booking_slider_container">
           <div class="booking_slider row g-0" *ngIf="hotels && !loading">
             <div class="booking_item col-md-4 g-4" *ngFor="let hotel of hotels">
-              <a [routerLink]="['/rooms']" [queryParams]="{hotel_id: hotel.id}">
+              <a [routerLink]="['/public-rooms']" [queryParams]="{hotel_id: hotel.id}">
                 <div class="background_image" [ngStyle]="{'background-image':'url(assets/images/booking_1.jpg)'}"></div>
                 <div class="booking_overlay trans_200">
                   <div class="text-light text-center fw-semibold fs-5" [ngStyle]="{'top':'60%'}">{{hotel.city}},{{hotel.address}}</div>

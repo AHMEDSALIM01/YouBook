@@ -22,7 +22,6 @@ export class HomeComponent implements OnInit {
   previous = "précedent"
   constructor(private hotelService:HotelService,private authService:AuthService) {
     this.filterCriteria = new FilterCriteria();
-    this.authService.startRefreshTokenInterval();
   }
 
   ngOnInit(): void{

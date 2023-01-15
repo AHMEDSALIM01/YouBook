@@ -1,10 +1,16 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from "@angular/common/http";
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+  HttpParams,
+} from "@angular/common/http";
 import {Users} from "../models/users";
-import {BehaviorSubject, catchError, Observable, of, tap, throwError} from "rxjs";
+import {BehaviorSubject, catchError, Observable, of, retry, startWith, switchMap, tap, throwError, timer} from "rxjs";
 import {IdToken} from "../models/id-token";
 import {Router} from "@angular/router";
 import {JwtHelperService} from "@auth0/angular-jwt";
+import {Reservation} from "../models/reservation";
 @Injectable({
   providedIn: 'root'
 })
@@ -13,7 +19,9 @@ export class AuthService {
   isLoggedIn = this.isLoggedInSubject.asObservable();
   userNameSubject = new BehaviorSubject<String>("");
   userLogged = this.userNameSubject.asObservable();
-  private refreshTokenInterval:any;
+  private refreshTokenSubject = new BehaviorSubject<any>(null);
+  //refreshToken$ = this.refreshTokenSubject.asObservable();
+  private refreshTokenIntervalId: any;
   role!:String;
   endPoint!:String;
   constructor(private http:HttpClient,private route:Router,private jwtHelper:JwtHelperService) { }
@@ -30,7 +38,7 @@ export class AuthService {
         // @ts-ignore
         let jwt = this.jwtHelper.decodeToken(accessToken.toString());
         this.userNameSubject.next(jwt.user_name);
-        this.startRefreshTokenInterval();
+        //this.startRefreshTokenInterval();
       }),
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
@@ -62,9 +70,8 @@ export class AuthService {
       const user = this.jwtHelper.decodeToken(token).user_name
       this.userNameSubject.next(user)
     }
-    const isLoggedIn = !this.jwtHelper.isTokenExpired(token);
+   const isLoggedIn = !this.jwtHelper.isTokenExpired(token);
     this.isLoggedInSubject.next(isLoggedIn);
-
     return isLoggedIn;
   }
 
@@ -74,46 +81,63 @@ export class AuthService {
     localStorage.removeItem("refresh_token");
     this.isLoggedInSubject.next(false);
     this.userNameSubject.next("")
-    this.stopRefreshTokenInterval();
+    this.stopRefreshToken();
     this.route.navigate(['/login']);
   }
 
-  startRefreshTokenInterval(){
-    this.refreshTokenInterval = setInterval(() => {
-      this.refreshToken();
-    }, 100000);
+  startRefreshTokenInterval() {
+    // Start the refresh token interval with a delay of 2 minutes
+    this.refreshTokenSubject.pipe(
+      startWith(null),
+      switchMap(() => timer(1 * 60 * 1000)),
+      switchMap(() => this.refreshToken()),
+      retry()
+    ).subscribe();
   }
 
-  stopRefreshTokenInterval(){
-    clearInterval(this.refreshTokenInterval);
+  stopRefreshToken(): void {
+    clearInterval(this.refreshTokenIntervalId);
   }
 
-  refreshToken(){
-      const token = localStorage.getItem("access_token");
-      const refreshToken = localStorage.getItem("refresh_token");
-      if (token!=null && this.jwtHelper.isTokenExpired(token)){
-        if(!this.jwtHelper.isTokenExpired(refreshToken)) {
-          const headers = new HttpHeaders().set("Authorization", "Bearer " + refreshToken)
-          console.log(headers)
-          this.http.get<IdToken>("http://localhost:8080/refreshToken", {headers}).subscribe(
-            response => {
-              localStorage.setItem("access_token", response.accessToken.toString());
-              localStorage.setItem("refresh_token", response.refreshToken.toString());
-              this.isLoggedInSubject.next(true);
-              window.location.reload();
-            },
-            error => {
-              if (error.status === 400) {
-                console.error("Error: ", error.error);
-              } else {
-                throw error;
-              }
-            }
-          );
-        }else{
-          this.logout();
-        }
-      }
+  refreshToken(): Observable<boolean | IdToken> {
+    const refreshToken = localStorage.getItem("refresh_token");
+    if (!this.jwtHelper.isTokenExpired(refreshToken)) {
+      const headers = new HttpHeaders().set("Authorization", "Bearer " + refreshToken);
+      return this.http.get<IdToken>("http://localhost:8080/refreshToken", { headers }).pipe(
+        tap(response => {
+          if (response.accessToken && response.refreshToken) {
+            localStorage.setItem("access_token", response.accessToken.toString());
+            localStorage.setItem("refresh_token", response.refreshToken.toString());
+            this.isLoggedInSubject.next(true);
+            // Emit a value to start the refresh token interval
+            this.refreshTokenSubject.next(true);
+          } else {
+            this.logout();
+          }
+        }),
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === 400) {
+            console.error("Error: ", error.error);
+            return of(false);
+          } else {
+            return throwError(error);
+          }
+        })
+      );
+    } else {
+      this.logout();
+      return of(false);
+    }
   }
-
+  getAccessToken(): string {
+    // @ts-ignore
+    return localStorage.getItem("access_token");
+  }
+  getRefreshToken(): string {
+    // @ts-ignore
+    return localStorage.getItem("refresh_token");
+  }
+  redirectToLogin(){
+    this.route.navigate(['/login']);
+  }
 }

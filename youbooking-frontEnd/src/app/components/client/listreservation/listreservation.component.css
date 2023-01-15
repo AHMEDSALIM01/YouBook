@@ -1,3 +1,8 @@
+
+.container{
+  padding-top: 50px;
+}
+
 .booking
 {
   background: #ffffff;
@@ -44,3 +49,32 @@
   visibility: hidden;
   opacity: 0;
 }
+.booking_button
+{
+  width: 152px;
+  height: 54px;
+  background: #ffa37b;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+.booking_button:hover
+{
+  background: rgba(0,0,0,0.2);
+}
+.table thead tr{
+  background: rgba(0,0,0,0.35);
+  color: #FFFFFF;
+}
+.table tbody td{
+  background: rgba(0,0,0,0.35);
+  color: #FFFFFF;
+}
+.table tbody th{
+  background: rgba(0,0,0,0.35);
+  color: #FFFFFF;
+}
+

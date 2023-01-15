@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HotelComponent } from './components/hotel/hotel.component';
-import {HttpClient, HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
 import { RoomsComponent } from './components/client/rooms/rooms.component';
 import {FormsModule} from "@angular/forms";
 import { HomeComponent } from './components/home/home.component';
@@ -15,6 +15,7 @@ import {JWT_OPTIONS, JwtHelperService, JwtModule} from "@auth0/angular-jwt";
 import {AuthService} from "./services/auth.service";
 import { SignupComponent } from './components/signup/signup.component';
 import { ListreservationComponent } from './components/client/listreservation/listreservation.component';
+import {AuthInterceptorService} from "./services/auth-interceptor.service";
 
 @NgModule({
   declarations: [
@@ -46,7 +47,15 @@ import { ListreservationComponent } from './components/client/listreservation/li
       }
     })
   ],
-  providers: [AuthService],
+  providers: [
+    AuthService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptorService,
+      multi: true
+    }
+
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
