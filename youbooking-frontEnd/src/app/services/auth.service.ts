@@ -10,7 +10,6 @@ import {BehaviorSubject, catchError, Observable, of, retry, startWith, switchMap
 import {IdToken} from "../models/id-token";
 import {Router} from "@angular/router";
 import {JwtHelperService} from "@auth0/angular-jwt";
-import {Reservation} from "../models/reservation";
 @Injectable({
   providedIn: 'root'
 })
@@ -21,7 +20,7 @@ export class AuthService {
   userLogged = this.userNameSubject.asObservable();
   private refreshTokenSubject = new BehaviorSubject<any>(null);
   //refreshToken$ = this.refreshTokenSubject.asObservable();
-  private refreshTokenIntervalId: any;
+  //private refreshTokenIntervalId: any;
   role!:String;
   endPoint!:String;
   constructor(private http:HttpClient,private route:Router,private jwtHelper:JwtHelperService) { }
@@ -81,11 +80,11 @@ export class AuthService {
     localStorage.removeItem("refresh_token");
     this.isLoggedInSubject.next(false);
     this.userNameSubject.next("")
-    this.stopRefreshToken();
+    //this.stopRefreshToken();
     this.route.navigate(['/login']);
   }
 
-  startRefreshTokenInterval() {
+  /*startRefreshTokenInterval() {
     // Start the refresh token interval with a delay of 2 minutes
     this.refreshTokenSubject.pipe(
       startWith(null),
@@ -93,15 +92,15 @@ export class AuthService {
       switchMap(() => this.refreshToken()),
       retry()
     ).subscribe();
-  }
+  }*/
 
-  stopRefreshToken(): void {
+  /*stopRefreshToken(): void {
     clearInterval(this.refreshTokenIntervalId);
-  }
+  }*/
 
   refreshToken(): Observable<boolean | IdToken> {
     const refreshToken = localStorage.getItem("refresh_token");
-    if (!this.jwtHelper.isTokenExpired(refreshToken)) {
+    if (!this.jwtHelper.isTokenExpired(refreshToken)){
       const headers = new HttpHeaders().set("Authorization", "Bearer " + refreshToken);
       return this.http.get<IdToken>("http://localhost:8080/refreshToken", { headers }).pipe(
         tap(response => {
@@ -109,7 +108,6 @@ export class AuthService {
             localStorage.setItem("access_token", response.accessToken.toString());
             localStorage.setItem("refresh_token", response.refreshToken.toString());
             this.isLoggedInSubject.next(true);
-            // Emit a value to start the refresh token interval
             this.refreshTokenSubject.next(true);
           } else {
             this.logout();

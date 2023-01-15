@@ -69,6 +69,7 @@ public class ReservationServiceImplementation implements ReservationService {
     }
 
     @Override
+    @Transactional
     public Reservation updateReservation(String ref, Reservation reservation) {
         try{
             if (!reservationValidator.validate(reservation)) {
@@ -93,13 +94,15 @@ public class ReservationServiceImplementation implements ReservationService {
             if (!isRoomAvailable) {
                 throw new IllegalStateException("La chambre n'est pas disponible pour la période donnée");
             }
+            Room room = roomService.getRoomById(reservation.getRoom().getId());
             int numberOfDays = (int) ChronoUnit.DAYS.between(reservation.getStartDate(), reservation.getEndDate());
-            Double totalPrice =Double.valueOf(Math.round(reservation.getRoom().getPrice()*numberOfDays*100)/100d);
+            Double totalPrice =Double.valueOf(Math.round(room.getPrice()*numberOfDays*100)/100d);
             reservationToCheck.setTotalPrice(totalPrice);
             reservationToCheck.setStartDate(reservation.getStartDate());
             reservationToCheck.setEndDate(reservation.getEndDate());
             reservationToCheck.setRoom(reservation.getRoom());
-            Reservation savedReservation = reservationRepository.save(reservationToCheck);
+            reservationToCheck.setStatus(StatusReservation.En_cours);
+            Reservation savedReservation = reservationToCheck;
             return savedReservation;
         }catch (IllegalStateException e){
             throw new IllegalStateException(e.getMessage());

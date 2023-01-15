@@ -7,9 +7,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {AuthService} from "../../../services/auth.service";
 import {Router} from "@angular/router";
 import {StatusReservation} from "../../../models/status-reservation";
-import * as Console from "console";
 import {Room} from "../../../models/room";
-import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-listreservation',
@@ -20,15 +18,18 @@ export class ListreservationComponent implements OnInit {
   private jwt:any;
   private token!:String;
   reservations!:Reservation[];
-  reservastionSub!:Subscription;
+  reservationSub:Reservation;
+  updateForm:boolean = false;
   user:Users;
   room:Room;
   user_id!:number;
+  show!:any[]
   errorMessage:String="";
   successMessage:String="";
   constructor(private reservationService:ReservationService,private jwtHelper:JwtHelperService,private authService:AuthService,private router:Router) {
     this.user = new Users();
     this.room = new Room();
+    this.reservationSub=new Reservation();
     if(!this.authService.isLogedIn()){
       this.router.navigate(['/login']);
     }
@@ -44,7 +45,6 @@ export class ListreservationComponent implements OnInit {
       // @ts-ignore
       this.jwt = this.jwtHelper.decodeToken(this.token);
       this.user_id=this.jwt.user_id;
-      console.log(this.user_id)
     }
   }
 
@@ -54,12 +54,14 @@ export class ListreservationComponent implements OnInit {
 
   getReservations(){
     this.user.id=this.user_id;
+    console.log(this.show);
     this.reservationService.getUserReservation(this.user).subscribe((response)=>{
       if(response instanceof HttpErrorResponse){
         console.log(response.error)
       }else{
         console.log(response)
         this.reservations = response
+        if(this.reservations.length) this.show = Array(this.reservations.length).fill(false);
       }
     })
   }
@@ -93,5 +95,69 @@ export class ListreservationComponent implements OnInit {
           this.errorMessage ="";
         },2500);
       }
+  }
+
+  updateReservation(index:number,reservation:Reservation){
+    if (this.authService.isLogedIn() && this.jwt.enabled){
+      if(reservation.startDate==null || reservation.endDate==null){
+        this.errorMessage = reservation.startDate == null ? "la date de début ne doit pas être vide" :
+          (reservation.endDate == null ? "la date de fin ne doit pas être vide" : "");
+      }else {
+        let startDate = new Date(reservation.startDate);
+        let endDate = new Date(reservation.endDate);
+        if(startDate.getTime()-Date.now()<0 || endDate.getTime()-Date.now()<0){
+          this.errorMessage = startDate.getTime()-Date.now()<0 ? "la date de début ne doit pas être avant la date d'aujourd'huit" :
+            (endDate.getTime()-Date.now()<0 ? "la date de fin ne doit pas être avant la date d'aujourd'huit" : "");
+        }
+        else if(endDate.getTime()-startDate.getTime()<0){
+          this.errorMessage="la date de fin ne doit pas être avant la date de début";
+        }else {
+          let difference = (endDate.getTime()-startDate.getTime())
+          if(difference==0){
+            reservation.totalPrice=reservation.room.price;
+          }else {
+            reservation.totalPrice=difference/86400000 * reservation.room.price;
+          }
+          this.room.id=reservation.room.id;
+          this.user.id=reservation.user.id;
+          reservation.user=this.user;
+          reservation.room=this.room;
+          console.log(reservation);
+          console.log(this.reservations[index].room)
+          this.reservationService.updateReservation(this.reservations[index])
+            .subscribe(
+              (response) => {
+                if(response instanceof HttpErrorResponse){
+                  this.errorMessage = response.error
+                }else{
+                  this.show[index]=false;
+                  this.successMessage = "reservation modifiée avec succès";
+                  this.errorMessage="";
+                  setTimeout(()=>{
+                    this.successMessage ='';
+                    window.location.reload();
+                  },2500);
+                }
+              },
+              (error) => {
+                this.errorMessage = error;
+              }
+            );
+        }
+      }
+    }else {
+      this.router.navigate(['/login']);
+    }
+  }
+  back(index:number){
+    this.show[index] = false;
+  }
+  showInput(index: number) {
+    for(let i = 0; i < this.show.length; i++) {
+      if(i !== index) {
+        this.show[i] = false;
+      }
+    }
+      this.show[index] = true;
   }
 }

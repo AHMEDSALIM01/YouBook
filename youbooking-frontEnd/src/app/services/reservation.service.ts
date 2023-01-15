@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Reservation} from "../models/reservation";
-import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from "@angular/common/http";
 import {BehaviorSubject, catchError, Observable, of, tap, throwError} from "rxjs";
 import {JwtHelperService} from "@auth0/angular-jwt";
 import {Users} from "../models/users";
@@ -62,6 +62,27 @@ export class ReservationService {
     if(this.authService.isLogedIn()){
       console.log(reservation)
       return this.http.put<Reservation>(this.host + "/reservation/cancelReservation",reservation).pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === 401) {
+            console.error("Error: ", error.error);
+            return of(error);
+          }else {
+            if (error.status === 400){
+              console.log(error)
+              return of(error);
+            }
+            return throwError(error);
+          }
+        })
+      );
+    }
+  }
+  // @ts-ignore
+  updateReservation(reservation:Reservation):Observable<Reservation | HttpErrorResponse>{
+    if(this.authService.isLogedIn()){
+      const access_token = localStorage.getItem("access_token");
+      const headers = new HttpHeaders().set("Authorization","Bearer "+access_token)
+      return this.http.put<Reservation>(this.host + "/reservation/updateReservation/"+reservation.ref.toString(),reservation,{headers}).pipe(
         catchError((error: HttpErrorResponse) => {
           if (error.status === 401) {
             console.error("Error: ", error.error);
