@@ -66,6 +66,7 @@ public class AuthenticationController {
     @GetMapping("/refreshToken")
     public ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String authToken = request.getHeader("Authorization");
+        System.out.println(authToken);
         if(authToken !=null && authToken.startsWith("Bearer ")){
             try {
                 String refreshToken = authToken.substring(7);
@@ -75,7 +76,7 @@ public class AuthenticationController {
                 String email = decodedJWT.getSubject();
                 Users user = userService.loadUserByEmail(email);
                 String jwtAccessToken = JWT.create().withSubject(user.getEmail())
-                        .withExpiresAt(new Date(System.currentTimeMillis()+2*60*1000))
+                        .withExpiresAt(new Date(System.currentTimeMillis()+10*60*1000))
                         .withClaim("roles",user.getRoles().stream().map(r->r.getName()).collect(Collectors.toList()))
                         .withClaim("user_id",user.getId())
                         .withClaim("enabled",user.getIs_active())

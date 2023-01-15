@@ -9,7 +9,7 @@ import {ListreservationComponent} from "./components/client/listreservation/list
 
 const routes: Routes = [
   {
-    path:"rooms",
+    path:"public-rooms",
     component:RoomsComponent
   },
   {

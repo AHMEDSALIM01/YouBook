@@ -12,6 +12,7 @@ import com.youbook.YouBook.services.UserService;
 import com.youbook.YouBook.validation.ReservationValidator;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -121,18 +122,36 @@ public class ReservationServiceImplementation implements ReservationService {
 
     @Override
     public Reservation cancelReservation(Reservation reservation) {
-        Reservation reservationToCheck = reservationRepository.getReservationByRef(reservation.getRef());
 
-        if (reservationToCheck == null) {
-            throw new IllegalStateException("Réservation non trouvée");
+        try{
+            if (!reservationValidator.validate(reservation)) {
+                throw new IllegalStateException(reservationValidator.getErrorMessage());
+            }
+            Users user = userService.getUserById(reservation.getUser().getId());
+            if (user == null) {
+                throw new IllegalStateException("utilisateur est invalide");
+            }
+            Reservation reservationToCheck = reservationRepository.getReservationByRef(reservation.getRef());
+            if (reservationToCheck == null) {
+                throw new IllegalStateException("Réservation non trouvée");
+            }
+            if(reservationToCheck.getStatus() == StatusReservation.valueOf("Confirmée")){
+                throw new IllegalStateException("vous n'avez pas le droit de modifier cette resérvation car elle est déjâ confirmée");
+            }
+            if (reservationToCheck.getStatus() == StatusReservation.valueOf("Annulée")){
+                throw new IllegalStateException("la réservation est déja annulée");
+            }
+            Room room = reservationToCheck.getRoom();
+            List<Reservation> reservations = room.getReservations();
+            reservations.remove(reservationToCheck);
+            reservationToCheck.setStatus(StatusReservation.Annulée);
+            reservationToCheck.setRoom(room);
+            Reservation savedReservation = reservationRepository.save(reservationToCheck);
+            roomService.updateRoom(room);
+            return savedReservation;
+        }catch (IllegalStateException e){
+            throw new IllegalStateException(e.getMessage());
         }
-        Room room = reservationToCheck.getRoom();
-        List<Reservation> reservations = room.getReservations();
-        reservations.remove(reservationToCheck);
-        reservationToCheck.setStatus(StatusReservation.valueOf("Annulée"));
-        room.getReservations().add(reservationToCheck);
-        roomService.updateRoom(room);
-        return reservationRepository.save(reservationToCheck);
     }
 
     @Override

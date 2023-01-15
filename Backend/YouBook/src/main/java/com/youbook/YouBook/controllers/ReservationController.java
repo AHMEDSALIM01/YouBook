@@ -35,12 +35,17 @@ public class ReservationController {
     }
     @PutMapping("/cancelReservation")
     public ResponseEntity cancelReservation(@RequestBody Reservation reservation){
-        Reservation reservationResponse = reservationService.cancelReservation(reservation);
-        if(reservationResponse!=null){
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(reservationResponse);
-        }else{
-            return ResponseEntity.badRequest().body("la resérvation ne peut peux pas annuler");
+        try {
+            Reservation reservationResponse = reservationService.cancelReservation(reservation);
+            if(reservationResponse!=null){
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(reservationResponse);
+            }else{
+                throw new IllegalStateException("la resérvation ne peut peux pas annuler");
+            }
+        }catch (IllegalStateException e){
+            return ResponseEntity.status(401).body(e.getMessage());
         }
+
     }
     @PutMapping("/confirmReservation")
     public ResponseEntity confirmReservation(@RequestBody Reservation reservation){
@@ -70,7 +75,7 @@ public class ReservationController {
         }
     }
     @GetMapping("/{id}")
-    public ResponseEntity getReservationByRef(@PathVariable Long id){
+    public ResponseEntity getReservationById(@PathVariable Long id){
         Reservation reservationResponse = reservationService.getReservationById(id);
         if(reservationResponse!=null){
             return ResponseEntity.status(HttpStatus.ACCEPTED).body(reservationResponse);

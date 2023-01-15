@@ -1,27 +1,30 @@
 <div class="booking" >
   <div class="container">
-    <div class="alert alert-success w-100 text-center fs-4 fw-semibold" ></div>
+    <div class="alert mb-2 alert-success w-100 text-center fs-4 fw-semibold" *ngIf="successMessage.length>0">{{successMessage}}</div>
+    <div class="alert mb-2 alert-danger w-100 text-center fs-4 fw-semibold" *ngIf="errorMessage.length>0">{{errorMessage}}</div>
     <div class="row">
       <div class="col">
         <div class="booking_title text-center"><h2>Mes Réservation</h2></div>
-        <div class="booking_slider_container">
-          <table class="table table-striped table-hover">
-            <thead>
+        <div class="booking_slider_container shadow">
+          <table class="table table-bordered table-responsive table-striped table-hover">
+            <thead class="text-center">
             <tr>
               <th scope="col">ref</th>
               <th scope="col">Date de début</th>
               <th scope="col">Date de fin</th>
               <th scope="col">Prix Total</th>
               <th scope="col">Status</th>
+              <th scope="col">Annuler la réservation</th>
             </tr>
             </thead>
-            <tbody *ngIf="reservations">
-            <tr *ngFor="let reservation of reservations">
+            <tbody *ngIf="reservations" class="text-center">
+            <tr *ngFor="let reservation of reservations;let i = index">
               <th scope="row">{{reservation.ref}}</th>
               <td>{{reservation.startDate}}</td>
               <td>{{reservation.endDate}}</td>
               <td>{{reservation.totalPrice}}</td>
               <td>{{reservation.status}}</td>
+              <td ><button class="booking_button trans_100" (click)="annulerReservation(i)">Annuler</button></td>
             </tr>
             </tbody>
           </table>

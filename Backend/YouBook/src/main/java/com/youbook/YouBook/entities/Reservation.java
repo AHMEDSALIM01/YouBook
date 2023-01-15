@@ -26,6 +26,7 @@ public class Reservation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(updatable = false)
     private String ref;
     @NotNull
     private LocalDate startDate;
@@ -33,7 +34,6 @@ public class Reservation implements Serializable {
     private LocalDate endDate;
     private Double totalPrice;
     @Enumerated(EnumType.STRING)
-    @Column(updatable = false)
     private StatusReservation status;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "room_id")
