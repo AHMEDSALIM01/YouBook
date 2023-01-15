@@ -58,11 +58,15 @@ public class ReservationController {
     }
     @PutMapping("/updateReservation/{ref}")
     public ResponseEntity updateReservation(@PathVariable String ref,@RequestBody Reservation reservation){
-        Reservation reservationResponse = reservationService.updateReservation(ref, reservation);
-        if(reservationResponse!=null){
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(reservationResponse);
-        }else{
-            return ResponseEntity.badRequest().body("la resérvation n'est pax modifier");
+        try{
+            Reservation reservationResponse = reservationService.updateReservation(ref, reservation);
+            if(reservationResponse!=null){
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(reservationResponse);
+            }else{
+                return ResponseEntity.badRequest().body("la resérvation n'est pax modifier");
+            }
+        }catch (IllegalStateException e){
+            return ResponseEntity.status(401).body(e.getMessage());
         }
     }
     @GetMapping("/{ref}")

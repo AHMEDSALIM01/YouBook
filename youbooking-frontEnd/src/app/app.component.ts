@@ -17,6 +17,6 @@ export class AppComponent {
 
   ngOnInit(): void {
     this.isLogedIn=this.authService.isLogedIn();
-    this.authService.startRefreshTokenInterval();
+    //this.authService.startRefreshTokenInterval();
   }
 }

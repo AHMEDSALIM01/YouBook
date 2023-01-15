@@ -7,25 +7,31 @@
         <div class="booking_title text-center"><h2>Mes Réservation</h2></div>
         <div class="booking_slider_container shadow">
           <table class="table table-bordered table-responsive table-striped table-hover">
-            <thead class="text-center">
+            <thead class="text-center align-middle">
             <tr>
               <th scope="col">ref</th>
               <th scope="col">Date de début</th>
               <th scope="col">Date de fin</th>
+              <th scope="col">Chambre N°</th>
+              <th scope="col">Hôtel</th>
               <th scope="col">Prix Total</th>
               <th scope="col">Status</th>
-              <th scope="col">Annuler la réservation</th>
+              <th scope="col" *ngIf="show">Annuler la réservation</th>
+              <th scope="col">Modifier</th>
             </tr>
             </thead>
-            <tbody *ngIf="reservations" class="text-center">
-            <tr *ngFor="let reservation of reservations;let i = index">
-              <th scope="row">{{reservation.ref}}</th>
-              <td>{{reservation.startDate}}</td>
-              <td>{{reservation.endDate}}</td>
-              <td>{{reservation.totalPrice}}</td>
-              <td>{{reservation.status}}</td>
-              <td ><button class="booking_button trans_100" (click)="annulerReservation(i)">Annuler</button></td>
-            </tr>
+            <tbody *ngIf="reservations" class="text-center align-middle">
+              <tr *ngFor="let reservation of reservations;let i = index">
+                  <th scope="row">{{reservation.ref}}</th>
+                  <td><input type="date" class="booking_input booking_input_a booking_in" [(ngModel)]="reservation.startDate" name="startDate" *ngIf="show[i]">{{!show[i] ? reservation.startDate:''}}</td>
+                  <td><input type="date" class="booking_input booking_input_a booking_out" [(ngModel)]="reservation.endDate" name="endDate" *ngIf="show[i]">{{!show[i] ? reservation.endDate : ''}}</td>
+                  <td>{{reservation.room.number}}</td>
+                  <td>{{reservation.room.hotel.name}}</td>
+                  <td>{{reservation.totalPrice}}</td>
+                  <td ><span [class]="reservation.status.toString()=='Confirmée'? 'alert alert-success rounded-0': (reservation.status.toString()=='Annulée'? 'alert alert-danger rounded-0':'alert alert-warning rounded-0') ">{{reservation.status}}</span></td>
+                  <td ><button class="booking_button trans_100" (click)="annulerReservation(i)" >Annuler</button></td>
+                  <td ><button class="booking_button trans_100" (click)="showInput(i)" *ngIf="!show[i]">Modifier</button><button class="booking_buttoncancel alert alert-danger trans_100" (click)="back(i)" *ngIf="show[i]">back</button><button class="booking_buttonsave alert alert-success trans_100" (click)="updateReservation(i,reservation)" *ngIf="show[i]">save</button></td>
+              </tr>
             </tbody>
           </table>
         </div>
