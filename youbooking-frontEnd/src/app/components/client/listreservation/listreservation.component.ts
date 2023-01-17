@@ -30,9 +30,6 @@ export class ListreservationComponent implements OnInit {
     this.user = new Users();
     this.room = new Room();
     this.reservationSub=new Reservation();
-    if(!this.authService.isLogedIn()){
-      this.router.navigate(['/login']);
-    }
     if(localStorage!=null){
       // @ts-ignore
       if(localStorage.getItem("access_token").toString()!==null){
@@ -54,7 +51,6 @@ export class ListreservationComponent implements OnInit {
 
   getReservations(){
     this.user.id=this.user_id;
-    console.log(this.show);
     this.reservationService.getUserReservation(this.user).subscribe((response)=>{
       if(response instanceof HttpErrorResponse){
         console.log(response.error)
@@ -120,10 +116,9 @@ export class ListreservationComponent implements OnInit {
           }
           this.room.id=reservation.room.id;
           this.user.id=reservation.user.id;
+          this.room.number=reservation.room.number;
           reservation.user=this.user;
           reservation.room=this.room;
-          console.log(reservation);
-          console.log(this.reservations[index].room)
           this.reservationService.updateReservation(this.reservations[index])
             .subscribe(
               (response) => {

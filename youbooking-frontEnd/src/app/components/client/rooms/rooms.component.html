@@ -5,7 +5,7 @@
       <div class="col">
         <div class="booking_title text-center"><h2>Nos chambres</h2></div>
         <div class="booking_slider_container">
-          <div class="owl-carousel owl-theme booking_slider row"*ngIf="rooms">
+          <div class="owl-carousel owl-theme booking_slider row" [ngStyle]="{'z-index':reservationForm ? '-1':''}" *ngIf="rooms">
             <div class="booking_item col-md-3 m-2" *ngFor="let room of rooms">
               <div class="background_image" [ngStyle]="{'background-image':'url(assets/images/booking_1.jpg)'}"></div>
               <div class="booking_overlay trans_100">
@@ -21,14 +21,21 @@
     <div class="booking_form_container" *ngIf="reservationForm">
       <div class="form_bg align-content-center">
         <form (submit)="confirmer()">
-          <div class="d-flex  flex-column align-items-center justify-content-center">
+          <div class="d-flex flex-column align-items-center justify-content-center mb-3">
+            <div class="text-center "><h2 class="text-white fw-semibold">Ajouter une réservation</h2></div>
             <span class="alert alert-danger" *ngIf="errorMessage.length>0">{{errorMessage}}</span>
             <div class="booking_input_container d-flex flex-column align-items-center justify-content-center">
-              <input type="text" [min]="now" class="datepicker booking_input booking_input_a booking_in" [(ngModel)]="reservation.startDate" name ="startDate" value="{{now}}" placeholder="Date de début">
-              <input type="text" [min]="now" class="datepicker booking_input booking_input_a booking_out" [(ngModel)]="reservation.endDate" name ="endDate" placeholder="Date de fin">
+              <label for="date_debut" class="text-white fw-semibold align-self-start mb-2">
+                Date de début:
+              </label>
+              <input type="date" id="date_debut" [min]="now" class="datepicker booking_input booking_input_a booking_in mb-3" [(ngModel)]="reservation.startDate" name ="startDate" value="{{now}}" placeholder="Date de début">
+              <label for="date_debut" class="text-white fw-semibold align-self-start mb-2">
+                Date de fin:
+              </label>
+              <input type="date" [min]="now" id="date_fin" class="datepicker booking_input booking_input_a booking_out" [(ngModel)]="reservation.endDate" name ="endDate" placeholder="Date de fin">
               <input type="hidden" class="booking_input booking_input_a" [(ngModel)]="reservation.room.id" [value]="idRoom" name="roomId">
             </div>
-            <div class="d-flex gap-2"><input type="submit" class="booking_button trans_200" value="Valider Réservation"><button (click)="Annuler()" class="booking_button trans_100">Annuler</button></div>
+            <div class="d-flex gap-2"><input type="submit" class="booking_button trans_200" value="Valider Réservation"><input (click)="Annuler()" type="reset" class="booking_button trans_100" value="Annuler"></div>
           </div>
         </form>
       </div>

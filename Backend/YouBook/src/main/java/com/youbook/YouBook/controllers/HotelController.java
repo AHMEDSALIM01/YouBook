@@ -3,6 +3,7 @@ package com.youbook.YouBook.controllers;
 import com.youbook.YouBook.criteria.FilterCriteria;
 import com.youbook.YouBook.entities.Hotel;
 import com.youbook.YouBook.entities.Room;
+import com.youbook.YouBook.entities.Users;
 import com.youbook.YouBook.services.HotelService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,7 @@ public class HotelController {
         this.hotelService = hotelService;
     }
     @GetMapping("/")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('OWNER')")
     public ResponseEntity<List<Hotel>> getAllHotels(){
         List<Hotel> hotels = hotelService.getAllHotels();
         return ResponseEntity.ok(hotels);
@@ -38,6 +40,7 @@ public class HotelController {
         return ResponseEntity.ok(hotels);
     }
     @PutMapping("/acceptHotel")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('OWNER')")
     public ResponseEntity<Hotel> acceptHotel(@RequestBody Hotel hotel){
         Hotel response = hotelService.accepteHotel(hotel);
         if(response != null){
@@ -47,6 +50,7 @@ public class HotelController {
         }
     }
     @PutMapping("/refuseHotel")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('OWNER')")
     public ResponseEntity<Hotel> refuseHotel(@RequestBody Hotel hotel){
         Hotel response = hotelService.refuseHotel(hotel);
         if(response != null){
@@ -56,6 +60,7 @@ public class HotelController {
         }
     }
     @PutMapping("/nonAvailable")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('OWNER')")
     public ResponseEntity makeHotelNonAvailable(@RequestBody Hotel hotel){
         Hotel response = hotelService.nonAvailable(hotel.getId(),hotel.getStartNonAvailable(),hotel.getEndNonAvailable());
         if(response!=null){
@@ -65,6 +70,7 @@ public class HotelController {
         }
     }
     @PutMapping("/available")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('OWNER')")
     public ResponseEntity makeHotelAvailable(@RequestBody Hotel hotel){
         Hotel response = hotelService.makeHotelAvailable(hotel.getId());
         if(response!=null){
@@ -74,6 +80,7 @@ public class HotelController {
         }
     }
     @PostMapping("/addHotel")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('OWNER')")
     public ResponseEntity addHotel(@Validated @RequestBody Hotel hotel){
         Hotel response = hotelService.addHotel(hotel);
         if(response != null){
@@ -83,6 +90,7 @@ public class HotelController {
         }
     }
     @PostMapping("/addRoom/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('OWNER')")
     public ResponseEntity addRoom(@PathVariable Long id,@Validated @RequestBody Room room){
         Room response = hotelService.addRoom(id, room);
         if(response.equals(room)){
@@ -117,5 +125,28 @@ public class HotelController {
         }
     }
 
+    @PostMapping("/updateHotel")
+    @PreAuthorize("hasAuthority('ADMIN') || hasAuthority('OWNER')")
+    public ResponseEntity updateHotel(@RequestBody Hotel hotel){
+        Hotel hotelresponse = hotelService.updateHotel(hotel.getId(),hotel);
+        try {
+            if(hotel!=null){
+                return ResponseEntity.status(HttpStatus.ACCEPTED).body(hotelresponse);
+            }else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Hotel n'est pas modifié");
+            }
 
+        }catch (IllegalStateException e){
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
+    }
+    @PostMapping("/hotelOwner")
+    public ResponseEntity getHotelByOwner(@RequestBody Users owner){
+        try{
+            List<Hotel> hotels=hotelService.getHotelByOwner(owner);
+            return ResponseEntity.status(200).body(hotels);
+        }catch (IllegalStateException e){
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
+    }
 }

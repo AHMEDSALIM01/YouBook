@@ -15,6 +15,7 @@ import {
 } from "rxjs";
 import {AuthService} from "./auth.service";
 import {JwtHelperService} from "@auth0/angular-jwt";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,7 @@ export class AuthInterceptorService implements HttpInterceptor{
   private isRefreshing = false;
   private refreshTokenSubject: BehaviorSubject<any> = new BehaviorSubject<any>(null);
 
-  constructor(private auth: AuthService,private jwtHelper:JwtHelperService) {}
+  constructor(private auth: AuthService,private jwtHelper:JwtHelperService,private route:Router) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (this.auth.isLogedIn()) {
@@ -35,7 +36,7 @@ export class AuthInterceptorService implements HttpInterceptor{
         });
         return next.handle(req);
     } else {
-      if (!req.url.endsWith('/login') && !req.url.endsWith('/signup') && !req.url.endsWith('/public-rooms') && !req.url.endsWith('/home')) {
+      if (!req.url.endsWith('/login') && !req.url.endsWith('/signupClient') && !req.url.endsWith('/signupOwner') && !req.url.endsWith('/hotel/hotels') && !req.url.includes("hotel")) {
         this.auth.redirectToLogin();
       }
       return next.handle(req);

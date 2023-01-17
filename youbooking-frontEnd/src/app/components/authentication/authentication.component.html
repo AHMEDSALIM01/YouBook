@@ -12,11 +12,11 @@
                       <div class="alert alert-danger fs-6 fw-semibold" *ngIf="errorMessage.length>0" [ngStyle]="{}">{{errorMessage}}</div>
                       <div class="alert alert-success fs-6 fw-semibold" *ngIf="successMessage.length>0" [ngStyle]="{}">{{successMessage}}</div>
                       <div class="login_form_container">
-                          <div class="home_title">Se Connecter</div>
+                          <div class="home_title">Se connecter</div>
                           <form class="login_form" id="contact_form" (submit)="onSubmit()">
                             <div class="input_container"><input type="email" class="login_input" [(ngModel)]="user.email" name="email" placeholder="Email"></div>
                             <div class="input_container"><input type="password" class="login_input" [(ngModel)]="user.password" name="password" placeholder="Mot de pass"></div>
-                            <input class="login_button" type="submit" value="Se connecter">
+                            <input class="login_button" type="submit" [disabled]="connexion.length>0?'disabled':''" [ngStyle]="{'background':connexion.length>0?'rgba(255,255,255,0.3)':'','color':connexion.length>0?'#ffa37b':''}" [value]="connexion.length>0?connexion:'Se connecter'">
                           </form>
                         </div>
                       </div>
