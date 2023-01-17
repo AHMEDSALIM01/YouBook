@@ -10,6 +10,7 @@ import {BehaviorSubject, catchError, Observable, of, retry, startWith, switchMap
 import {IdToken} from "../models/id-token";
 import {Router} from "@angular/router";
 import {JwtHelperService} from "@auth0/angular-jwt";
+import {Collection} from "ngx-pagination";
 @Injectable({
   providedIn: 'root'
 })
@@ -17,10 +18,11 @@ export class AuthService {
   isLoggedInSubject = new BehaviorSubject<boolean>(false);
   isLoggedIn = this.isLoggedInSubject.asObservable();
   userNameSubject = new BehaviorSubject<String>("");
+  isClientSubjec = new BehaviorSubject<boolean>(false);
+  isClient = this.isClientSubjec.asObservable();
+  isOwnerSubjec = new BehaviorSubject<boolean>(false);
+  isOwner = this.isOwnerSubjec.asObservable();
   userLogged = this.userNameSubject.asObservable();
-  private refreshTokenSubject = new BehaviorSubject<any>(null);
-  //refreshToken$ = this.refreshTokenSubject.asObservable();
-  //private refreshTokenIntervalId: any;
   role!:String;
   endPoint!:String;
   constructor(private http:HttpClient,private route:Router,private jwtHelper:JwtHelperService) { }
@@ -37,6 +39,11 @@ export class AuthService {
         // @ts-ignore
         let jwt = this.jwtHelper.decodeToken(accessToken.toString());
         this.userNameSubject.next(jwt.user_name);
+        if(this.getUserRole()=="OWNER"){
+          this.isOwnerSubjec.next(true);
+        }else if(this.getUserRole()=="CLIENT"){
+          this.isClientSubjec.next(true);
+        }
         //this.startRefreshTokenInterval();
       }),
       catchError((error: HttpErrorResponse) => {
@@ -79,61 +86,25 @@ export class AuthService {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     this.isLoggedInSubject.next(false);
-    this.userNameSubject.next("")
+    this.userNameSubject.next("");
+    this.isClientSubjec.next(false);
+    this.isClientSubjec.next(false);
     //this.stopRefreshToken();
     this.route.navigate(['/login']);
   }
 
-  /*startRefreshTokenInterval() {
-    // Start the refresh token interval with a delay of 2 minutes
-    this.refreshTokenSubject.pipe(
-      startWith(null),
-      switchMap(() => timer(1 * 60 * 1000)),
-      switchMap(() => this.refreshToken()),
-      retry()
-    ).subscribe();
-  }*/
-
-  /*stopRefreshToken(): void {
-    clearInterval(this.refreshTokenIntervalId);
-  }*/
-
-  refreshToken(): Observable<boolean | IdToken> {
-    const refreshToken = localStorage.getItem("refresh_token");
-    if (!this.jwtHelper.isTokenExpired(refreshToken)){
-      const headers = new HttpHeaders().set("Authorization", "Bearer " + refreshToken);
-      return this.http.get<IdToken>("http://localhost:8080/refreshToken", { headers }).pipe(
-        tap(response => {
-          if (response.accessToken && response.refreshToken) {
-            localStorage.setItem("access_token", response.accessToken.toString());
-            localStorage.setItem("refresh_token", response.refreshToken.toString());
-            this.isLoggedInSubject.next(true);
-            this.refreshTokenSubject.next(true);
-          } else {
-            this.logout();
-          }
-        }),
-        catchError((error: HttpErrorResponse) => {
-          if (error.status === 400) {
-            console.error("Error: ", error.error);
-            return of(false);
-          } else {
-            return throwError(error);
-          }
-        })
-      );
-    } else {
-      this.logout();
-      return of(false);
-    }
-  }
   getAccessToken(): string {
     // @ts-ignore
     return localStorage.getItem("access_token");
   }
-  getRefreshToken(): string {
+  getUserRole(): any {
     // @ts-ignore
-    return localStorage.getItem("refresh_token");
+    const roles = this.jwtHelper.decodeToken(localStorage.getItem("access_token"));
+    if (roles){
+      return roles.roles[0];
+    }else {
+      return "";
+    }
   }
   redirectToLogin(){
     this.route.navigate(['/login']);

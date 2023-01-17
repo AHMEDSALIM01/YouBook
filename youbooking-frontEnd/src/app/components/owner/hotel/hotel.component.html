@@ -1,0 +1,41 @@
+<div class="booking" >
+  <div class="container">
+    <div class="alert mb-2 alert-success w-100 text-center fs-4 fw-semibold" *ngIf="successMessage.length>0">{{successMessage}}</div>
+    <div class="alert mb-2 alert-danger w-100 text-center fs-4 fw-semibold" *ngIf="errorMessage.length>0">{{errorMessage}}</div>
+    <div class="row">
+      <div class="col">
+        <div class="booking_title text-center"><h2>Mes Hôtels </h2></div>
+        <div class="booking_slider_container shadow">
+          <table class="table table-bordered table-responsive table-striped table-hover">
+            <thead class="text-center align-middle">
+            <tr>
+              <th scope="col">Nom de l'hôtel</th>
+              <th scope="col">Adresse</th>
+              <th scope="col">Ville</th>
+              <th scope="col">Nombres des chambres</th>
+              <th scope="col">Status</th>
+              <th scope="col">non disponibilité début</th>
+              <th scope="col">non disponibilité fin</th>
+              <th scope="col" *ngIf="show">Modifier/Supprimer</th>
+            </tr>
+            </thead>
+            <tbody *ngIf="hotels" class="text-center align-middle">
+              <tr *ngFor="let hotel of hotels | paginate: { itemsPerPage: 7, currentPage: page }; let i = index ">
+                <th scope="row"><input type="text" class="booking_input booking_input_a booking_in" [(ngModel)] = "hotel.name"  name="name" *ngIf="show[i]">{{!show[i] ? hotel.name :''}}</th>
+                <td><input type="text" class="booking_input booking_input_a booking_in"  name="address" [(ngModel)] = "hotel.address" *ngIf="show[i]">{{!show[i] ? hotel.address :''}}</td>
+                <td><input type="text" class="booking_input booking_input_a booking_in"  name="city" [(ngModel)] = "hotel.city" *ngIf="show[i]">{{!show[i] ? hotel.city :''}}</td>
+                <td><input type="text" class="booking_input booking_input_a booking_in"  name="numberOfRooms" [(ngModel)] = "hotel.numberOfRooms" *ngIf="show[i]">{{!show[i]?hotel.numberOfRooms:''}}</td>
+                <td ><span [class]="hotel.status.toString()=='Accépté'? 'alert alert-success rounded-0': (hotel.status.toString()=='Refusé'? 'alert alert-danger rounded-0':'alert alert-warning rounded-0') ">{{hotel.status}}</span></td>
+                <td><input type="date" class="booking_input booking_input_a booking_in" [(ngModel)] = "hotel.startNonAvailable"  name="startNonAvailable" *ngIf="show[i]">{{!show[i] && hotel.startNonAvailable ? hotel.startNonAvailable:(!show[i] && !hotel.startNonAvailable?'YYYY-MM-DD':'')}}</td>
+                <td><input type="date" class="booking_input booking_input_a booking_out" [(ngModel)] = "hotel.endNonAvailable" name="endNonAvailable" *ngIf="show[i]">{{!show[i] && hotel.endNonAvailable ? hotel.endNonAvailable:(!show[i] && !hotel.endNonAvailable?'YYYY-MM-DD':'')}}</td>
+                <td ><button class="booking_button w-50 trans_100" (click)="showInput(i)" *ngIf="!show[i]">Modifier</button><button class="booking_button w-50 trans_100" (click)="deleteHotel(i)" *ngIf="!show[i]">supprimer</button><button class="booking_button w-50 trans_100" (click)="updateHotel(i)" *ngIf="show[i]">save</button><button class="booking_button w-50 trans_100" (click)="back(i)" *ngIf="show[i]">Annuler</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <pagination-controls class="text-center" (pageChange)="page = $event" [previousLabel]="'précedent'" [nextLabel]="'suivant'"></pagination-controls>
+      </div>
+    </div>
+  </div>
+</div>
+

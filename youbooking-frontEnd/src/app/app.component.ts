@@ -10,13 +10,10 @@ import {JwtHelperService} from "@auth0/angular-jwt";
 export class AppComponent {
   title = 'youbooking-frontEnd';
   isLogedIn=false;
-  user_name!:String;
   constructor(private authService:AuthService) {
-
   }
 
   ngOnInit(): void {
     this.isLogedIn=this.authService.isLogedIn();
-    //this.authService.startRefreshTokenInterval();
   }
 }

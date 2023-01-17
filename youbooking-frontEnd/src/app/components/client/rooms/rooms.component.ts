@@ -67,6 +67,8 @@ export class RoomsComponent implements OnInit {
     this.reservationForm=true;
   }
   Annuler():void{
+    this.errorMessage ="";
+    this.successMessage="";
     window.location.reload();
   }
   confirmer(){

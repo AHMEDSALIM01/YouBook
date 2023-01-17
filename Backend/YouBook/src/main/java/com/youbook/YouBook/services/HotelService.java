@@ -4,6 +4,7 @@ import com.youbook.YouBook.criteria.FilterCriteria;
 import com.youbook.YouBook.entities.Hotel;
 import com.youbook.YouBook.entities.Reservation;
 import com.youbook.YouBook.entities.Room;
+import com.youbook.YouBook.entities.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -26,4 +27,5 @@ public interface HotelService {
     Hotel makeHotelAvailable(Long id);
     Room addRoom(Long id,Room room);
     Boolean isHotelAvailable(Reservation reservation);
+    List<Hotel> getHotelByOwner(Users owner);
 }

@@ -1,6 +1,7 @@
 package com.youbook.YouBook.repositories;
 
 import com.youbook.YouBook.entities.Hotel;
+import com.youbook.YouBook.entities.Users;
 import com.youbook.YouBook.enums.StatusHotel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,4 +18,5 @@ public interface HotelRepository extends JpaRepository<Hotel,Long> {
     Page<Hotel> findAllByStatus(Pageable pageable, StatusHotel status);
     Hotel findByName(String name);
     Hotel findByAddress(String address);
+    List<Hotel> findByOwner(Users owner);
 }

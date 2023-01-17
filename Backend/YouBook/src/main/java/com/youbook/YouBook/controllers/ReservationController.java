@@ -5,6 +5,7 @@ import com.youbook.YouBook.entities.Users;
 import com.youbook.YouBook.services.ReservationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +21,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
     @PostMapping("/addReservation")
+    @PreAuthorize("hasAuthority('CLIENT')")
     public ResponseEntity saveReservation(@Validated @RequestBody Reservation reservation){
         try{
             Reservation reservationResponse = reservationService.addReservation(reservation);
@@ -34,6 +36,7 @@ public class ReservationController {
         }
     }
     @PutMapping("/cancelReservation")
+    @PreAuthorize("hasAuthority('CLIENT')")
     public ResponseEntity cancelReservation(@RequestBody Reservation reservation){
         try {
             Reservation reservationResponse = reservationService.cancelReservation(reservation);
@@ -48,6 +51,7 @@ public class ReservationController {
 
     }
     @PutMapping("/confirmReservation")
+    @PreAuthorize("hasAuthority('OWNER')")
     public ResponseEntity confirmReservation(@RequestBody Reservation reservation){
         Reservation reservationResponse = reservationService.confirmReservation(reservation);
         if(reservationResponse!=null){
@@ -57,6 +61,7 @@ public class ReservationController {
         }
     }
     @PutMapping("/updateReservation/{ref}")
+    @PreAuthorize("hasAuthority('CLIENT')")
     public ResponseEntity updateReservation(@PathVariable String ref,@RequestBody Reservation reservation){
         try{
             Reservation reservationResponse = reservationService.updateReservation(ref, reservation);

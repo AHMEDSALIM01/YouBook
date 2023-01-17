@@ -44,6 +44,6 @@ public class Hotel implements Serializable {
     private List<Room> rooms;
     @ManyToOne
     @JoinColumn(name = "owner_id")
-    @JsonIgnoreProperties("hotels")
+    @JsonIgnoreProperties({"hotels","reservations"})
     private Users owner;
 }

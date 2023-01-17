@@ -15,6 +15,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -79,11 +80,17 @@ public class HotelServiceImplementation implements HotelService {
             throw new IllegalStateException("l'hotel doit contenir un propritaire");
         }
         Users owner = userService.getUserById(hotel.getOwner().getId());
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String authentication = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<GrantedAuthority> hasRole = (List<GrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         if(owner == null){
             throw new IllegalStateException("le propritaire de ce Hotel n'existe pas");
         }
-        if(owner.getEmail() != authentication.getName()){
+        for(GrantedAuthority role:hasRole){
+            if(role.getAuthority().equals("ADMIN")){
+                hotelRepository.save(hotel);
+            }
+        }
+        if(!owner.getEmail().equals(authentication)){
             throw new IllegalStateException("vous n'avez pas le droit de modifier ce Hotel");
         }
         Hotel hotelSaved = hotelRepository.save(hotel);
@@ -149,6 +156,31 @@ public class HotelServiceImplementation implements HotelService {
         }
             return true;
 
+    }
+
+    @Override
+    public List<Hotel> getHotelByOwner(Users owner) {
+        try {
+            if(owner==null){
+                throw new IllegalStateException("l'objet ne doit être vide");
+            }
+            if(owner.getId()==null){
+                throw new IllegalStateException("l'id de propriétaire est obligatoire");
+            }
+            Users ownerChek = userService.getUserById(owner.getId());
+            if(ownerChek==null){
+                throw new IllegalStateException("l'utilisateur non trouvé");
+            }
+            Authentication userAuthenticate = SecurityContextHolder.getContext().getAuthentication();
+            String userAuthenticateEmail = (String) userAuthenticate.getPrincipal();
+            if(!ownerChek.getEmail().equals(userAuthenticateEmail)){
+                throw new IllegalStateException("Vous êtes pas le droit d'affichés les hotels de cet utilisateur");
+            }
+            List<Hotel> hotels = hotelRepository.findByOwner(owner);
+            return hotels;
+        }catch (IllegalStateException e){
+            throw new IllegalStateException(e.getMessage());
+        }
     }
 
     @Override

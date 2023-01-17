@@ -2,6 +2,13 @@
   <div class="header_content d-flex flex-row align-items-center justify-content-between">
     <div class="logo"><a href="#">YouBooking</a></div>
     <div class="ml-auto d-flex flex-row align-items-center justify-content-start">
+      <nav class="main_nav">
+        <ul class="d-flex flex-row align-items-start justify-content-start">
+          <li *ngIf="isClient || !isLoggedIn"><a [routerLink]="['/home']">Acceuil</a></li>
+          <li *ngIf="isLoggedIn && isOwner"><a [routerLink]="['/']">Hôtels</a></li>
+          <li *ngIf="isLoggedIn && (isClient || isOwner)"><a [routerLink]="isClient?['client/reservations']:['owner/reservations']">Reservations</a></li>
+        </ul>
+      </nav>
       <div class="book_button" *ngIf="isLoggedIn"><a (click)="logout()">Déconnexion</a></div>
       <div class="book_button" *ngIf="isLoggedIn==false"><a [routerLink]="['login']">Se Connecter</a></div>
       <div class="book_button" *ngIf="isLoggedIn==false"><a [routerLink]="['signup']">Créer Compte</a></div>

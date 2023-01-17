@@ -7,7 +7,7 @@
   margin-top: 34px;
   padding-left: 78px;
   padding-right: 88px;
-  z-index: 100;
+  z-index: 0;
 }
 .form_bg
 {
@@ -41,8 +41,6 @@
 {
   width: 100%;
 }
-
-
 .booking_input_a
 {
 

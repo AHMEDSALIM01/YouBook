@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HotelComponent } from './components/hotel/hotel.component';
+import { HotelComponent } from './components/owner/hotel/hotel.component';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from "@angular/common/http";
 import { RoomsComponent } from './components/client/rooms/rooms.component';
 import {FormsModule} from "@angular/forms";
@@ -16,6 +16,7 @@ import {AuthService} from "./services/auth.service";
 import { SignupComponent } from './components/signup/signup.component';
 import { ListreservationComponent } from './components/client/listreservation/listreservation.component';
 import {AuthInterceptorService} from "./services/auth-interceptor.service";
+import { ForbiddenComponent } from './components/forbidden/forbidden.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import {AuthInterceptorService} from "./services/auth-interceptor.service";
     NavBarComponent,
     AuthenticationComponent,
     SignupComponent,
-    ListreservationComponent
+    ListreservationComponent,
+    ForbiddenComponent
   ],
   imports: [
     BrowserModule,

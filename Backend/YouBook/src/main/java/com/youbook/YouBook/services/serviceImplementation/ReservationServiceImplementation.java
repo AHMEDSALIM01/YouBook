@@ -96,7 +96,12 @@ public class ReservationServiceImplementation implements ReservationService {
             }
             Room room = roomService.getRoomById(reservation.getRoom().getId());
             int numberOfDays = (int) ChronoUnit.DAYS.between(reservation.getStartDate(), reservation.getEndDate());
-            Double totalPrice =Double.valueOf(Math.round(room.getPrice()*numberOfDays*100)/100d);
+            Double totalPrice=null;
+            if(numberOfDays == 0){
+                totalPrice = room.getPrice();
+            }else {
+                totalPrice =Double.valueOf(Math.round(room.getPrice()*numberOfDays*100)/100d);
+            }
             reservationToCheck.setTotalPrice(totalPrice);
             reservationToCheck.setStartDate(reservation.getStartDate());
             reservationToCheck.setEndDate(reservation.getEndDate());
